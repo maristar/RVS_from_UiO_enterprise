@@ -51,7 +51,7 @@ Sessions={'Training1', 'Training2'};
 for mkk=1:length(good_subj_list)
     kk=good_subj_list(mkk);
     Folder_name=temp22{kk,:};
-    fprintf(' ***  Working on subject %d: %s\n', num2str(mmk), Folder_name)
+    fprintf(' ***  Working on subject %d: %s\n', num2str(mkk), Folder_name)
     % Go to the analysis path
     cd(Analyzed_path)
     % Make a directory for each Subject - to save the results of preprocessing
@@ -67,7 +67,7 @@ for mkk=1:length(good_subj_list)
         Raw_path_folder=[Raw_Path temp22{kk,:} '\' temp22{kk,:} '\' session_temp '\']; % temp22{kk,:} '/'
         % Go to Raw_path_folder
         cd(Raw_path_folder);
-        % Find the EEG recording
+        % Find the EEG recording6å,<
         listing_rawbdf=dir('*.bdf');
         
         Num_filesbdf=length(listing_rawbdf);
@@ -95,9 +95,10 @@ for mkk=1:length(good_subj_list)
 %         EEG=pop_chanedit(EEG, 'lookup','/Users/mstavrin/Documents/MATLAB/EEGLAB_WORKSHOP_SML/eeglab_sml_v3/eeglab_sml_v3/plugins/dipfit2.3/standard_BESA/standard-10-5-cap385.elp');
 %         
         %% Select which channels to use
-        ChanNames={'Fz' 'Cz' 'FCz' 'CPz' 'Oz'};
-        % ChanNames={'FCz'};
-        EEG = pop_select( EEG,'channel',ChanNames);
+        EEG = pop_select( EEG,'nochannel',{'EXG5' 'EXG6' 'EXG7' 'EXG8'});
+%         ChanNames={'Fz' 'Cz' 'FCz' 'CPz' 'Oz'};
+%         % ChanNames={'FCz'};
+%         EEG = pop_select( EEG,'channel',ChanNames);
         EEG = eeg_checkset( EEG );
     %    eeglab redraw
 

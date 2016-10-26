@@ -196,54 +196,54 @@ cd FiguresGA_RVS_FRN_noparts_accLuck
 % Plots for Correct-Wrong
 % Figure 1 is reserved for EEGLAB gui. 
 
-for cc=1:(length(chanlocs))
-    fprintf('figure %s:\n', num2str(cc))
-    % As Figure 1 is reserved for EEGLAB, then we start from figure 2
-    hFig=figure(cc+1); set(gca,'colororder',[0 0 1;1 0 0],'nextplot','add');
-    
-    set(gca,'fontsize', 16);
-    plot(timeVec_msec, GA_EEGdata_Correct(cc,:), 'Linewidth', 2); hold on; 
-    plot(timeVec_msec, GA_EEGdata_Wrong(cc,:), 'Linewidth', 2); 
-    legend('Correct','Wrong');
-    title(EEG.chanlocs(cc).labels);
-    axis('tight');
-    SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-    %text(0,max(GA_EEGdata_HR(cc,:)), 'Feedback');
-    temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_FRN_accLuck_til1000' 'Correct_Wrong'];
-    saveas(cc+1, temp_save_name_fig, 'png');
-    saveas(hFig, temp_save_name_fig, 'fig');
-    clear temp_save_name
-    close(hFig)
-end
+% for cc=1:(length(chanlocs))
+%     fprintf('figure %s:\n', num2str(cc))
+%     % As Figure 1 is reserved for EEGLAB, then we start from figure 2
+%     hFig=figure(cc+1); set(gca,'colororder',[0 0 1;1 0 0],'nextplot','add');
+%     
+%     set(gca,'fontsize', 16);
+%     plot(timeVec_msec, GA_EEGdata_Correct(cc,:), 'Linewidth', 2); hold on; 
+%     plot(timeVec_msec, GA_EEGdata_Wrong(cc,:), 'Linewidth', 2); 
+%     legend('Correct','Wrong');
+%     title(EEG.chanlocs(cc).labels);
+%     axis('tight');
+%     SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+%     %text(0,max(GA_EEGdata_HR(cc,:)), 'Feedback');
+%     temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_FRN_accLuck_til1000' 'Correct_Wrong'];
+%     saveas(cc+1, temp_save_name_fig, 'png');
+%     saveas(hFig, temp_save_name_fig, 'fig');
+%     clear temp_save_name
+%     close(hFig)
+% end
 
 % Plots for HR- LR
+% 
+% for cc=1:length(chanlocs)
+%     fprintf('figure %s:\n', num2str(cc))
+%     hFig2=figure(cc+1); set(gca,'colororder',[0 0 1;1 0 0],'nextplot','add');
+%     set(gca,'fontsize', 16);
+%     plot(timeVec_msec, GA_EEGdata_HR(cc,:), 'Linewidth', 2); hold on; 
+%     plot(timeVec_msec, GA_EEGdata_LR(cc,:), 'Linewidth', 2); 
+%     axis('tight');
+%     legend('HR','LR');
+%     title(EEG.chanlocs(cc).labels);
+%     SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+%     %text(0, max(GA_EEGdata_HR(cc,:)),[], 'Feedback');
+%     temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_FRN_accLuck_HR_LR_til1000'];
+% %    print(fig,temp_save_name_fig,'-dpng')
+%     saveas(hFig2, temp_save_name_fig, 'fig');
+%     saveas(hFig2, temp_save_name_fig, 'png');
+%     clear temp_save_name
+%     close(hFig2)
+% end
 
-for cc=1:length(chanlocs)
-    fprintf('figure %s:\n', num2str(cc))
-    hFig2=figure(cc+1); set(gca,'colororder',[0 0 1;1 0 0],'nextplot','add');
-    set(gca,'fontsize', 16);
-    plot(timeVec_msec, GA_EEGdata_HR(cc,:), 'Linewidth', 2); hold on; 
-    plot(timeVec_msec, GA_EEGdata_LR(cc,:), 'Linewidth', 2); 
-    axis('tight');
-    legend('HR','LR');
-    title(EEG.chanlocs(cc).labels);
-    SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-    %text(0, max(GA_EEGdata_HR(cc,:)),[], 'Feedback');
-    temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_FRN_accLuck_HR_LR_til1000'];
-%    print(fig,temp_save_name_fig,'-dpng')
-    saveas(hFig2, temp_save_name_fig, 'fig');
-    saveas(hFig2, temp_save_name_fig, 'png');
-    clear temp_save_name
-    close(hFig2)
-end
 
-
-% % Save data for wavelets
+% % Save data for wavelets or topoplots of GA data 
 % Commented because I prefer unfiltered data for wavelets
-% save dataGA_Wrong dataGA_Wrong
-% save dataGA_Correct GA_EEGdata_Correct -v7.3
-% save dataGA_HRT GA_EEGdata_HR
-% save dataGA_LR GA_EEGdata_LR
-% save timeVect_msec timeVec_msec
+save dataGA_Wrong dataGA_Wrong
+save dataGA_Correct GA_EEGdata_Correct -v7.3
+save dataGA_HRT GA_EEGdata_HR
+save dataGA_LR GA_EEGdata_LR
+save timeVect_msec timeVec_msec
 
 toc

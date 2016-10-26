@@ -82,7 +82,8 @@ for mkk=1:length(good_subj_list)
         % Find it iteratively:
         all_headers=T(1,:);
         all_headers2=table2cell(all_headers);
-    
+        clear all_headers
+        
         % Find for the Feedback Onset delay
         for jjj=1:length(all_headers2)
             a=strcmp(all_headers2{1,jjj}, 'Feedback.OnsetDelay');

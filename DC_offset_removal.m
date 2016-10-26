@@ -1,11 +1,11 @@
 
-function data_filt = DC_offset_removal(data);
+function data_filt = DC_offset_removal(data, Fs);
 %% DC offset removal. 21.10.2011 Maria L. Stavrinou
 %a)solution 1
 %% 1. load the EEG.data and save it as another set
 %  Data should be as nchan x timeduration_all
 %% 2 Low pass filter 
-h=fdesign.lowpass('Fp,Fst,Ap,Ast',0.001,0.05,1,6,250);
+h=fdesign.lowpass('Fp,Fst,Ap,Ast',0.001,0.05,1,6,Fs);
 d=design(h,'butter');
 fvtool(d)
 % % check on a single channel

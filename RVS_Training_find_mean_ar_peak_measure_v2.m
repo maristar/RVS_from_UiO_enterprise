@@ -4,10 +4,10 @@ function [ final_peak_measure ] = RVS_Training_find_mean_ar_peak_measure_v2(mean
 % Was used in 22 June 2016, for Base-Test, double one corr, 4 rewlev
 %
 % Input arguments
-% - meantempGo: the average waveform
+% - meantempGo: the average waveform (timepoints x 1)?
 % - peak_start_time: the time to start looking for the peak
 % - peak_end_time: the time to stop looking for the peak
-% - time_start: integer, in msec, time that the epoch begins for example
+% - time_start: positive or negative integer, in msec, time that the epoch begins for example
 %               -200 msec
 % - time_end: the time that the epoch ends in msec.
 % - Fs: sampling frequency
@@ -63,7 +63,7 @@ msec_to_dp=Fs/1000;
         case 'mean'
             % The 'peakFRN' variable now hosts the values of the mean of the 
             % predefined interval.
-            peakFRN=mean(meantempGo(peak_start_time_index:peak_end_time_index));
+            peakFRN=mean(meantempGo(peak_start_time_index:peak_end_time_index)); %SOS ,1 added 28.sept.
         
         case 'base_peak'
             % This is designed for the FRN peak as described by Hajcak,

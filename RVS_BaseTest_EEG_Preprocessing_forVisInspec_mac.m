@@ -3,16 +3,18 @@ clear all
 close all 
 tic
 %% Path information
-Raw_Path='/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
-%'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/'; 
-Analyzed_path='/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/RVS/';
-%'/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets_B_T/';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
+% Raw_Path='/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
+% %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
+% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/'; 
+% Analyzed_path='/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/RVS/';
+% %'/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets_B_T/';
+% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
+Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
+Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject210*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -20,17 +22,17 @@ end
 clear kk listing_raw
 %% Instruction: The folder name should be the same and as defined above
  % Lets start the mega loop
-for kk=3%1:Num_folders
+for kk=1%1:Num_folders
     Folder_name=temp22{kk,:};
-    Analyzed_path_folder=[Analyzed_path temp22{kk,:} '/'];
-    Raw_path_folder=[Raw_Path temp22{kk,:} '/' temp22{kk,:} '/'];
+    Analyzed_path_folder=[Analyzed_path temp22{kk,:} '\'];
+    Raw_path_folder=[Raw_Path temp22{kk,:} '\' temp22{kk,:} '\'];
     cd(Raw_path_folder); % Go into the Raw but out of the Base/Test folder
     sessions={'Base','Test'};
     for kkj=1%1%:length(sessions)
         current_session=sessions{kkj};
-        Raw_path_folder_session=[Raw_path_folder current_session '/'];
+        Raw_path_folder_session=[Raw_path_folder current_session '\'];
         
-        Analyzed_path_folder_session=[Analyzed_path_folder current_session '/'];
+        Analyzed_path_folder_session=[Analyzed_path_folder current_session '\'];
         Name_Subject_session=[Folder_name(5:end) '_' sessions{kkj}];
         %% Find the bdf files inside the Raw_path_folder_session
         
@@ -71,6 +73,19 @@ for kk=3%1:Num_folders
         
  %% TODO to run the DC offset filter -i run it after
 
+
+        
+        %% Apply DC filter 
+        % Check the sampling frequency
+        Fs=EEG.srate;
+        %  Run the DCoffset_removal_21_10_2011_a_final.m made as function
+        input_data=EEG.data;
+        data_filt=DC_offset_removal(input_data,Fs);
+        EEG.data=data_filt;
+        clear input_data;
+        % EEG.setname=[temp_setname_resample '_DC']
+        eeglab redraw
+        
         %% Resample
         fs_new=1024;
         EEG = pop_resample( EEG, fs_new);
@@ -78,16 +93,6 @@ for kk=3%1:Num_folders
         EEG.setname=temp_setname_resample;
         EEG = eeg_checkset( EEG );
         eeglab redraw
-        
-        %% Apply DC filter 
-        %  Run the DCoffset_removal_21_10_2011_a_final.m made as function
-        input_data=EEG.data;
-        data_filt=DC_offset_removal(input_data);
-        EEG.data=data_filt;
-        clear input_data;
-        EEG.setname=[temp_setname_resample '_ch_DC']
-        eeglab redraw
-        
 %         % TODO - Add filtering 0.1 - 100 Hz
 %         data_filt_smoot=eegfilt(EEG.data, fs_new, 1, 1);
 %         EEG.data=data_filt_smooth;
@@ -104,11 +109,11 @@ for kk=3%1:Num_folders
 %         eeglab redraw
         
         %%  Epoch
-        temp_epochname=[Name_Subject_session '_' num2str(fs_new)  '_1024nofilt_ch_DC_epochs_tr2' ];
+        temp_epochname=[Name_Subject_session '_' num2str(fs_new)  '_1024nofilt_epochs_tr2' ];
         % TODO check if it accepts the temp_epochname below
         EEG = pop_epoch( EEG, {  '2'  }, [-0.3 0.7], 'newname', temp_epochname, 'epochinfo', 'yes');
         EEG = eeg_checkset( EEG ); % epoching was [-0.3 0.7]
-        EEG = pop_rmbase( EEG, [-300 -250]);% [-500 -400]
+        EEG = pop_rmbase( EEG, [-300 0]);% [-500 -400]
         EEG.setname=temp_epochname;
         eeglab redraw
         

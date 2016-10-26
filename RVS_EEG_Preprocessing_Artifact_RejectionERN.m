@@ -9,15 +9,18 @@ tic
 % Read the exported e-prime file:
 %% Go to raw directory
 %% Path information
-Raw_Path='D:\RVS\Raw_datasets\';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
-%'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
-%
-Analyzed_path='D:\RVS\Analyzed_datasets\';
+Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
+Analyzed_path='Z:\RVS\Analyzed_datasets\';
+% 
+% Raw_Path='D:\RVS\Raw_datasets\';
+% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
+% %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
+% %
+% Analyzed_path='D:\RVS\Analyzed_datasets\';
 
 cd(Raw_Path)
-% Define list of folders 
-listing_raw=dir('RVS_Subject*');
+%% Define list of folders 
+listing_raw=dir('RVS_Subject122*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -26,9 +29,12 @@ end
 % test22=temp22(1,1)
 clear kk listing_raw
 
-Sessions={'Training1', 'Training2'};
+%% Define Sessions
+Sessions={'Base', 'Test'}; %{'Training1', 'Training2'};
+
+
 %% Start load
-for kk=24:Num_folders
+for kk=1:Num_folders
     Folder_name=temp22{kk,:};
     % Go to the analysis path
     cd(Analyzed_path)
@@ -44,15 +50,50 @@ for kk=24:Num_folders
         % Go to Raw_path_folder
         cd(Raw_path_folder);
         % Find the EEG recording
-    cd(Analyzed_path_folder)
-    Name_to_load=[Folder_name '_' session_temp '_128_ch_DC_epochs_tr1_5_chan_5_filt_ERN.set']
-    EEG = pop_loadset('filename',Name_to_load,'filepath',Analyzed_path_folder);
-    EEG = eeg_checkset( EEG );
-    eeglab redraw
+        cd(Analyzed_path_folder)
+        Name_to_load=[Folder_name '_' session_temp '_256__Luck.set']
+        EEG = pop_loadset('filename',Name_to_load,'filepath',Analyzed_path_folder);
+        EEG = eeg_checkset( EEG );
+        eeglab redraw
+    
+    %% Define which electrode to use for Eye and muscle artifacts. 
+    %%Define Channels to use 
+    chanlocs=EEG.chanlocs;
+    for kkc=1:length(chanlocs)
+        chan_names{kkc,:}=chanlocs(kkc).labels;
+    end
+    clear kkc
+    chan_names=chan_names';
+    % For eye artifact rejection 
+    Which_channel='EXG5'; 
+    Which_channel=char(Which_channel);
 
+    for kkc=1:length(chan_names),
+        if strcmp(chan_names{:, kkc}, Which_channel)==1
+            disp(num2str(kkc))
+            chan_index=kkc;
+        end
+    end
+    chan_index_eye=chan_index;
+    
+    % For muscle electrodes
+    Which_channel='C6'; 
+    Which_channel=char(Which_channel);
+
+    for kkj=1:length(chan_names),
+        if strcmp(chan_names{:, kkj}, Which_channel)==1
+            disp(num2str(kkj))
+            chan_index=kkj;
+        end
+    end
+    clear kkj
+    chan_index_muscle=chan_index;
+    %% End define which 
+    
     % For Eye artifact rejection, load the FP1,:2,:z channel
-    Fp1=squeeze(EEG.data(5,:,:));
-
+    Fp1=squeeze(EEG.data(chan_index_eye,:,:));
+    T8=squeeze(EEG.data(chan_index_muscle,:,:));
+    
     % For muscle artifacts, good channels to check are: FT7(8), T8(52), FT8(43), 
     %       T7(15); And threshold 35-40 microVolts
     for cc=1:length(EEG.chanlocs);
@@ -82,7 +123,7 @@ for kk=24:Num_folders
     time_before_zero=find(timeVec_msec>-100);
     time_before_zero_idp=min(time_before_zero);
     time_zero_idp=find(timeVec_msec==0); % 0 
-    time_after_zero_temp=find(timeVec_msec<400);% 500
+    time_after_zero_temp=find(timeVec_msec<500);% 500
     time_after_zero_idp=max(time_after_zero_temp);
     
 
@@ -91,13 +132,13 @@ for kk=24:Num_folders
 
     % Use the 75 microvolt limit 
     % Check the Fp1 amplitude if it exceeds 75 microseconds.
-    threshold = 75;
+    threshold = 50;
     noisy=[];
     % Decide which channels to use and double their precision
     % For the eye artifact 
     Fp1=double(Fp1);
     % For the Muscle artifact
-    T8=double(chan(1,:,:));
+    T8=double(chan(chan_index_muscle,:,:));
     % Start
         for jj=1:ntrials
             temp_trial=Fp1(:,jj);
@@ -131,11 +172,11 @@ for kk=24:Num_folders
         
         % Save as Noisy 
         cd(Analyzed_path_folder)
-        mkdir('TriggersERN');
-        cd('TriggersERN');
+        mkdir('Triggers_newAI');
+        cd('Triggers_newAI');
         save('Noisy.txt', 'noisy','-ascii' );
-    clear chan
-    end
+    clear chan_names 
+    end % For session 
 
 end    
 % % Finding the threshold for muscle artifact rejection
