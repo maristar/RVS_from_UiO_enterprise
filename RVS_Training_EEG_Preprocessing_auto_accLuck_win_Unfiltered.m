@@ -34,7 +34,7 @@ cd(Raw_Path)
 % Define list of folders 
 listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
-for kk=1:Num_folders
+for kk=1:33% Num_folders
     temp22{kk,:}=listing_raw(kk).name;
  
 end
@@ -48,7 +48,7 @@ good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), goo
 
 Sessions={'Training1', 'Training2'};
 %% Start load
-for mkk=1:length(good_subj_list)
+for mkk=21:length(good_subj_list)
     kk=good_subj_list(mkk);
     Folder_name=temp22{kk,:};
     fprintf(' ***  Working on subject %d: %s\n', num2str(mkk), Folder_name)
@@ -100,82 +100,36 @@ for mkk=1:length(good_subj_list)
 %         % ChanNames={'FCz'};
 %         EEG = pop_select( EEG,'channel',ChanNames);
         EEG = eeg_checkset( EEG );
-    %    eeglab redraw
-
-%         %% Resample
-%         fs_new=256;
-%         EEG = pop_resample( EEG, fs_new);
-%         temp_setname_resample=[Name_Subject_session '_' num2str(fs_new)];
-%         EEG.setname=temp_setname_resample;
-%         EEG = eeg_checkset( EEG );
-%         eeglab redraw
-%         
-%         %% Apply DC filter 
-%         %  Run the DCoffset_removal_21_10_2011_a_final.m made as function
-%         input_data=EEG.data;
-%         data_filt=DC_offset_removal(input_data);
-%         EEG.data=data_filt;
-%         clear input_data;
-%         EEG.setname=[temp_setname_resample '_ch_DC']
-%         eeglab redraw
-%         
-%          %% Apply low pass filter
-%         data=data_filt;
-%         clear data_filt
-%         filter_from=0;
-%         filter_to=20;
-%         lowpass_filt=eegfiltfft(data, fs_new, filter_from, filter_to);
-%         EEG.data=lowpass_filt;
-%         clear input_data from to
-%         EEG.setname=[temp_setname_resample '_ch_DC'];
-%         eeglab redraw
         
-EEG  = pop_basicfilter( EEG,  1:5 , 'Boundary', 'boundary', 'Cutoff', [ 0.0253 45], 'Design', 'butter', 'Filter', 'bandpass', 'Order',  2 ); % GUI: 30-Aug-2016 15:34:37
-[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','off'); 
-
-% *. Downsample to 256 Hz. 
-EEG = pop_resample( EEG, 256);
-[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'setname','RVS_Subject128_Training1_elist_resampled','overwrite','on','gui','off'); 
-
-% HERE
-% 7. Epoch 
-% 
-% Use as baseline a -200 to 0 period 
-extraNameForSet='_Luck_stim';
-Name_Subject_Session=temp22{kk,:};
-temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
-% TODO check if it accepts the temp_epochname below
-trigger='20';
-epoch_from_sec=-0.2;%-0.2;
-epoch_to_sec=0.8;%0.8;
-
-EEG = pop_epoch( EEG, {  trigger }, [epoch_from_sec epoch_to_sec], 'newname', temp_epochname, 'epochinfo', 'yes');
-EEG = eeg_checkset( EEG );
-baseline_from=-200;
-baseline_to=0;
-EEG = pop_rmbase( EEG, [baseline_from baseline_to]);
-EEG.setname=temp_epochname;
-%eeglab redraw
-
-
-
-%         % File indentifier
-%         %NameForSet='_ch_DC_epochs_tr50_auto_5_chan_filt';
-%         NameForSet='_Luck_test';
-%         temp_epochname=[Name_Subject_session '_' num2str(fs_new)  NameForSet ];
-%         % TODO check if it accepts the temp_epochname below
-%         trigger='50';
-%         epoch_from_sec=-1;%-0.2;
-%         epoch_to_sec=2;%0.8;
-%         
-%         EEG = pop_epoch( EEG, {  trigger }, [epoch_from_sec epoch_to_sec], 'newname', temp_epochname, 'epochinfo', 'yes');
-%         EEG = eeg_checkset( EEG );
-%         baseline_from=-200;
-%         baseline_to=-1;
-%         EEG = pop_rmbase( EEG, [baseline_from baseline_to]);
-%         EEG.setname=temp_epochname;
-%         eeglab redraw
         
+        %% *Downsample to 256 Hz. 
+        EEG = pop_resample( EEG, 256);
+        EEG = eeg_checkset( EEG );
+        
+        %% Apply DC filter 
+        %  Run the DCoffset_removal_21_10_2011_a_final.m made as function
+        Fs=256;
+        input_data=EEG.data;
+        data_filt=DC_offset_removal(input_data, Fs);
+        EEG.data=data_filt;
+        clear input_data;
+        eeglab redraw
+
+        extraNameForSet='_Luck_stim_unfilt';
+        Name_Subject_Session=temp22{kk,:};
+        temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
+        % TODO check if it accepts the temp_epochname below
+        trigger='20';
+        epoch_from_sec=-0.2;%-0.2;
+        epoch_to_sec=0.8;%0.8;
+        EEG = pop_epoch( EEG, {  trigger }, [epoch_from_sec epoch_to_sec], 'newname', temp_epochname, 'epochinfo', 'yes');
+        EEG = eeg_checkset( EEG );
+        baseline_from=-200;
+        baseline_to=0;
+        EEG = pop_rmbase( EEG, [baseline_from baseline_to]);
+        EEG.setname=temp_epochname;
+
+     
         % Make a directory and save
         cd(Analyzed_path)
         cd(temp22{kk,1})

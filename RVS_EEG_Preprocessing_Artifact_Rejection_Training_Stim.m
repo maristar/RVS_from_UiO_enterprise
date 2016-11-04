@@ -3,6 +3,7 @@
 % epochs? Yes 
 %
 % Revising this 31.5.2016
+% Revising this for Training_Stim 31.10.2016
 clear all 
 close all
 tic
@@ -20,7 +21,7 @@ Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
 cd(Raw_Path)
 %% Define list of folders 
-listing_raw=dir('RVS_Subject101*');
+listing_raw=dir('RVS_Subject105*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -51,7 +52,7 @@ for kk=1:Num_folders
         cd(Raw_path_folder);
         % Find the EEG recording
         cd(Analyzed_path_folder)
-        Name_to_load=[Folder_name '_' session_temp '_256__Luck.set']
+        Name_to_load=[Folder_name '_' session_temp '_256__Luck_stim_unfilt.set']
         EEG = pop_loadset('filename',Name_to_load,'filepath',Analyzed_path_folder);
         EEG = eeg_checkset( EEG );
         eeglab redraw
@@ -65,7 +66,7 @@ for kk=1:Num_folders
     clear kkc
     chan_names=chan_names';
     % For eye artifact rejection 
-    Which_channel='EXG5'; 
+    Which_channel='EXG3'; 
     Which_channel=char(Which_channel);
 
     for kkc=1:length(chan_names),
@@ -77,7 +78,7 @@ for kk=1:Num_folders
     chan_index_eye=chan_index;
     
     % For muscle electrodes
-    Which_channel='C6'; 
+    Which_channel='TP7'; 
     Which_channel=char(Which_channel);
 
     for kkj=1:length(chan_names),
@@ -120,10 +121,10 @@ for kk=1:Num_folders
     msec_to_dp=fs/1000;
     
     % Time to look for artifacts 
-    time_before_zero=find(timeVec_msec>-100);
+    time_before_zero=find(timeVec_msec>-200);
     time_before_zero_idp=min(time_before_zero);
     time_zero_idp=find(timeVec_msec==0); % 0 
-    time_after_zero_temp=find(timeVec_msec<500);% 500
+    time_after_zero_temp=find(timeVec_msec<600);% 500
     time_after_zero_idp=max(time_after_zero_temp);
     
 
@@ -132,13 +133,30 @@ for kk=1:Num_folders
 
     % Use the 75 microvolt limit 
     % Check the Fp1 amplitude if it exceeds 75 microseconds.
-    threshold = 50;
+    threshold = 100;
     noisy=[];
     % Decide which channels to use and double their precision
     % For the eye artifact 
     Fp1=double(Fp1);
     % For the Muscle artifact
     T8=double(chan(chan_index_muscle,:,:));
+
+% % Fieldtrip way http://www.fieldtriptoolbox.org/tutorial/automatic_artifact_rejection#ii_filtering_the_data
+% % 1. Envelope of the signal
+%     Fp1h = hilbert(Fp1);
+% Fp1env = abs(y);
+% % 2.  Find mean and std (over all samples)
+%    Fp1mean=mean(Fp1env, 2);
+%    Fp1std=std(Fp1env); % over all samples. 
+% % 3.   %  Make z-scored the channels we have. 
+%     for kk=1:size(Fp1, 2), % Fp1=ntime x ntrials 
+%         Fp1z(:,kk) = (Fp1env( :,kk) - mean(Fp1mean))/std(Fp1std);
+%     end
+% % 4. Per timepoint these z-values are averaged. Since an artifact might occur on any and often on more than one electrode (think of eyeblinks and muscle artifacts), averaging z-values over channels/electrodes allows evidence for an artifact to accumulate.
+%    Fp1meanz=mean(Fp1z,2);
+% % Plot
+% figure; plot(Fp1meanz); hold on; plot(mean(Fp1,2), 'r')
+
     % Start
         for jj=1:ntrials
             temp_trial=Fp1(:,jj);
@@ -157,7 +175,7 @@ for kk=1:Num_folders
             T8=squeeze(T8);
             temp_trial_muscle=T8(time1_index, jj);
             temp_trial_muscle_diff=abs(diff(temp_trial_muscle));
-            find_Gt_50=find(temp_trial_muscle_diff(:,1)>50);
+            find_Gt_50=find(temp_trial_muscle_diff(:,1)>threshold);
             %disp(length(find_Gt_50))
       %      figure; plot(temp_trial_muscle_diff)
       %      find_muscle(jj,:)=length(find_Gt_50);
@@ -175,6 +193,7 @@ for kk=1:Num_folders
         mkdir('Triggers_newAI');
         cd('Triggers_newAI');
         save('Noisy.txt', 'noisy','-ascii' );
+        % TODO save([temp22{kk,:} '_stim.txt'], 'noisy', '-ascii');
     clear chan_names 
     end % For session 
 

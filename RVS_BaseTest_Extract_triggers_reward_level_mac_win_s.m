@@ -18,17 +18,13 @@ listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
- 
-end
-
-Sessions={'Base', 'Test'};
-
-%% 
+ end
+clear kk 
+%% Make a document to write the number of triggers in each condition
 cd(Analyzed_path)
 fid=fopen('RVS_BT_4rewlevs_counts_of_triggers.txt', 'wt');
 fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 %% Start the mega loop for analysis 
-
 
 % Define sessions
 Sessions={'Base', 'Test'};
