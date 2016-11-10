@@ -42,13 +42,13 @@ end
 clear kk listing_raw
 
 % Define which subjects to keep in the analysis for FRN here
-bad_subject_list=[6,8,18,22,32];
-good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
+% bad_subject_list=[6,8,18,22,32];
+% good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
-
+good_subj_list=[6,8,18,22,32];
 Sessions={'Training1', 'Training2'};
 %% Start load
-for mkk=21:length(good_subj_list)
+for mkk=1:length(good_subj_list)
     kk=good_subj_list(mkk);
     Folder_name=temp22{kk,:};
     fprintf(' ***  Working on subject %d: %s\n', num2str(mkk), Folder_name)
