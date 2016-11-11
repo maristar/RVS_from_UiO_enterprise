@@ -52,7 +52,7 @@ for mkk=1:length(good_subj_list)
     Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
     cd(Raw_path_folder);
     % jj=1 for Base, jj=2 for Test
-    for jj=1%:1%length(Sessions)
+    for jj=1:length(Sessions)
         session_temp=Sessions{jj};
         cd(Raw_Path);
         cd(temp22{jjk,:});
@@ -67,7 +67,7 @@ for mkk=1:length(good_subj_list)
         % Go to Raw_path_folder
         cd(Raw_path_folder);
         if jjk>3
-            disp('Subject104 and up')
+            %disp('Subject104 and up')
             % Load the exported edat2 file (later named Tfinal).
             listing_raw2=dir('*matlab.txt');
             if length(listing_raw2)==0
@@ -101,58 +101,19 @@ for mkk=1:length(good_subj_list)
         all_headers=T(1,:);
         all_headers2=table2cell(all_headers);
         clear all_headers
-         Mask_CRESP=eprime_to_matlab( T, all_headers2, 'MASK.CRESP');
-         Mask1_RESP=eprime_to_matlab( T, all_headers2, 'Mask.RESP');
-          Mask2_RESP=eprime_to_matlab( T, all_headers2,'Mask2.RESP');
-          RewPair=eprime_to_matlab( T, all_headers2,'RewPair');
+        Mask_CRESP=eprime_to_matlab( T, all_headers2, 'Mask.CRESP');
+        Mask1_RESP=eprime_to_matlab( T, all_headers2, 'Mask.RESP');
+        Mask2_RESP=eprime_to_matlab( T, all_headers2,'Mask2.RESP');
+        RewPair=eprime_to_matlab( T, all_headers2,'RewPair');
         [T1RewConting] = eprime_to_matlab( T, all_headers2, 'T1RewConting');
         [T2RewConting]=eprime_to_matlab(T, all_headers2, 'T2RewConting');
         [TotalAcc]=eprime_to_matlab(T, all_headers2, 'TotACC');
-%         % Find for the T1RewContig %% TODO TO make it a function
-%         for jjj=1:length(all_headers2)
-%             a=strcmp(all_headers2{1,jjj}, 'T1RewConting');
-%             if a==1
-%                 indexT1RewConting=jjj;
-%             end
-%         end
-%         clear a jjj % OK
-% 
-%         T1RewConting_table=T(2:end, indexT1RewConting); % 131 for JackLoe, tested first!
-%         T1RewConting=table2cell(T1RewConting_table);
-        
-%         %% Find for the T1RewContig %% TODO TO make it a function
-%         for jjj=1:length(all_headers2)
-%             a=strcmp(all_headers2{1,jjj}, 'T2RewConting');
-%             if a==1
-%                 indexT2RewConting=jjj;
-%             end
-%         end
-%         clear a jjj % OK
-% 
-%         T2RewConting_table=T(2:end, indexT2RewConting); % 131 for JackLoe, tested first!
-%         T2RewConting=table2cell(T2RewConting_table);
-%                
-%         %% Find for the Total.ACC
-%         for jjj=1:length(all_headers2)
-%             a=strcmp(all_headers2{1,jjj}, 'TotACC');
-%             if a==1
-%                 indexTotalAcc=jjj;
-%             end
-%         end
-%          clear a jjj 
-%         
-%         TotalAcc_table=T(2:end, indexTotalAcc); % 131 for JackLoe, tested first!
-%         TotalAcc=table2cell(TotalAcc_table);
-%         clear indexStimACC
-%               
-%         
-        %% End automate
+
         %% Calculate the total number of triggers we have 
         Num_triggers=size(Mask_CRESP); 
         Num_triggers=Num_triggers(1);
 
          %% Find accuracy=2 and this is our condition
-
         double_index_temp=zeros(Num_triggers, 1);
         for kkt=1:Num_triggers
             if TotalAcc{kkt,1}==2
@@ -163,44 +124,88 @@ for mkk=1:length(good_subj_list)
         double_report=double_index_temp(double_index_temp>0); % 87x 1
         clear double_index_temp kkt
         
-        % Start, from now on we have as num_triggers the
-        % length(double_report) Nov2016
-        
-
+        %% Select from the double_report those who are 8020 or 2080.
         index8020=zeros(length(double_report),1);
-        for kkm=1:length(double_report)
+        if length(double_report)>0
+            for kkm=1:length(double_report)
                temp_index=double_report(kkm);
                temp_rewpair=RewPair{temp_index,1};% '50Lh20Lh'
-               switch temp_rewpair{:}
+               switch temp_rewpair
                    case {'80Hh20Lh', '20Lh80Hh'}
-                       disp('20Hh80Hh here')
+                       %disp('20Hh80Hh here')
                        index8020(kkm,1)=temp_index;
-                       temp_pressed1=Mask1_RESP{temp_index,:};
-                       temp_pressed2=Mask2_RESP{temp_index,:};
-                       temp_position1=T1RewConting{temp_index,:};
-                       temp_position2=T2RewConting{temp_index,:};
-                       %
-                        % Find the correct response
-                       temp_Mask_CRESP=Mask_CRESP{temp_index, 1}; % CELL
-                       % Make it string and divide it in two parts 
-                       temp_MCRESP_string = temp_Mask_CRESP{1};
-                       % Now divide it into two parts. 
-                       temp_MCRESP_parts = strsplit(temp_MCRESP_string, ',');
-                       % Part 1
-                       temp_MCRESP_part1=temp_MCRESP_parts(1);
-                       % Part 2
-                       temp_MCRESP_part2=temp_MCRESP_parts(2);
-               
-                       if strcmp(temp_pressed1, temp_MCRESP_part1)==1
-                           RewContingPressed1_80_20{kkm,:}=temp_position1;
-                       elseif strcmp(temp_pressed1, temp_MCRESP_part2)==1
-                          RewContingPressed1_80_20{kkm,:}=temp_position2;
-                       end  
-                       clear temp_rewpair temp_pressed1 temp_pressed2 temp_position1 temp_position2 temp_index %15.9.2016
                end
+            end
         end
+        index8020=index8020(index8020>0);
+        clear kkm temp_index temp_rewpair
         
-index8020=index8020(index8020>0);
+        %% For those 8020 or 2080, do some calculations to find out which one they pressed more. 
+        if length(index8020)>0
+            for kkm=1:length(index8020)
+                temp_index=index8020(kkm);
+                % Find the correct response
+                temp_Mask_CRESP=Mask_CRESP{temp_index, 1}; % char
+    %           % Make it string and divide it in two parts 
+    %            temp_MCRESP_string = temp_Mask_CRESP{1};
+                % Now divide it into two parts. 
+                temp_MCRESP_parts = strsplit(temp_Mask_CRESP, ',');
+                % Part 1
+                temp_MCRESP_position1=temp_MCRESP_parts(1);
+                % Part 2
+                temp_MCRESP_position2=temp_MCRESP_parts(2);
+
+                % What did the subject pressed: 
+               temp_pressed1=Mask1_RESP{temp_index,:};
+               temp_pressed2=Mask2_RESP{temp_index,:};
+
+               % What were the reward contingencies of position 1 (from the
+               % CRESP)
+               temp_position1=T1RewConting{temp_index,:};
+               temp_position2=T2RewConting{temp_index,:};
+
+               if strcmp(temp_pressed1, temp_MCRESP_position1)==1
+                   RewContingPressed1_80_20{kkm,:}=temp_position1;
+               elseif strcmp(temp_pressed1, temp_MCRESP_position2)==1
+                  RewContingPressed1_80_20{kkm,:}=temp_position2;
+               end  
+               clear temp_rewpair temp_pressed1 temp_pressed2 temp_position1 temp_position2 temp_index temp_MCRESP_position2 temp_MCRESP_position1 temp_MCRESP_parts ...
+                   temp_Mask_CRESP%15.9.2016
+                   end
+
+                %% Initialize for 80     
+                count80=0;
+                for kk=1:length(RewContingPressed1_80_20); 
+                    if strcmp(RewContingPressed1_80_20(kk,1), '80Hh')==1; 
+                        count80=count80+1; 
+                    end; 
+                end; 
+                clear kk  
+
+                Total_percentage80=count80*100/length(index8020); 
+                disp([( Folder_name) '_' (session_temp) ': Total_percentage of 80Hh is: ' num2str(Total_percentage80)])
+                clear count
+
+                %% Initialize for 20
+                count20=0;
+                for kk=1:length(RewContingPressed1_80_20); 
+                    if strcmp(RewContingPressed1_80_20(kk,1), '20Lh')==1; 
+                        count20=count20+1; 
+                    end; 
+                end; 
+                clear kk 
+
+                Total_percentage20=count20*100/length(index8020); 
+                clear count20
+                disp([( Folder_name) '_' (session_temp) ': Total_percentage of 20Hh is: ' num2str(Total_percentage20)])
+                    results_press1.(Folder_name).(session_temp).press80=Total_percentage80;
+                    results_press1.(Folder_name).(session_temp).press20=Total_percentage20;
+                    clear Total_percentage20 Total_percentage80 
+        end %if length index8020>0
+     end % Sessions
+  end % For folders
+        
+
 
 %               
 %                % The temp_MCRESP_part1 position in found at the
@@ -247,29 +252,27 @@ index8020=index8020(index8020>0);
 % %            end % for kkm 
 % %            clear kkm
 % 
-     end % For sessions 
-%     clear T   
- end % For folders
-
-count=0;
-for kk=1:length(RewContingPressed1_80_20); 
-    if strcmp(RewContingPressed1_80_20(kk,1), '80Hh')==1; 
-        count=count+1; 
-    end; 
-end; 
-disp(count);
-
-Total_percentage80=count*100/length(index8020); 
-disp(['Total_percentage of 80Hh is: ' num2str(Total_percentage80)])
-
-
-count=0;
-for kk=1:length(RewContingPressed1_80_20); 
-    if strcmp(RewContingPressed1_80_20(kk,1), '20Lh')==1; 
-        count=count+1; 
-    end; 
-end; 
-disp(count);
-
-Total_percentage20=count*100/length(index8020); 
-disp(['Total_percentage of 80Hh is: ' num2str(Total_percentage20)])
+% 
+% 
+% count=0;
+% for kk=1:length(RewContingPressed1_80_20); 
+%     if strcmp(RewContingPressed1_80_20(kk,1), '80Hh')==1; 
+%         count=count+1; 
+%     end; 
+% end; 
+% disp(count);
+% 
+% Total_percentage80=count*100/length(index8020); 
+% disp(['Total_percentage of 80Hh is: ' num2str(Total_percentage80)])
+% 
+% 
+% count=0;
+% for kk=1:length(RewContingPressed1_80_20); 
+%     if strcmp(RewContingPressed1_80_20(kk,1), '20Lh')==1; 
+%         count=count+1; 
+%     end; 
+% end; 
+% disp(count);
+% 
+% Total_percentage20=count*100/length(index8020); 
+% disp(['Total_percentage of 20Hh is: ' num2str(Total_percentage20)])
