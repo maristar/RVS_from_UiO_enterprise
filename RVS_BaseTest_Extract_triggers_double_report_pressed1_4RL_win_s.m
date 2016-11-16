@@ -140,12 +140,17 @@ for mkk=1:length(good_subj_list)
                    case {'80Hh20Lh', '20Lh80Hh'}
                        %disp('20Hh80Hh here')
                        index8020(kkm,1)=temp_index;
+                   case {'80Hh50Lh', '50Lh80Hh','80Hh50Hh', '50Hh80Hh'}
+                       index8050(kkm,1)=temp_index;
                end
             end
         elseif length(double_report)==0
             index8020=0;
+            index8050=0;
         end
         index8020=index8020(index8020>0);
+        index8050=index8050(index8050>0);
+        
         clear kkm temp_index temp_rewpair
         
         %% For those 8020 or 2080, do some calculations to find out which one they pressed more. 
