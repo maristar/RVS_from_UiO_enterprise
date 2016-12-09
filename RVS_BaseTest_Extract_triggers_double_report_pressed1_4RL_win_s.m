@@ -4,6 +4,7 @@
 % 01.11.2016 Analyzing in double report, how many subjects pressed first
 % the 80Hh position when there was 80Hh -20Lh
 % Works well, gives output in excel. COuld not work on subject 124. 
+% -*RL* I am interested in 4 Reward Levels, and not in 80_20
 % Maria Stavrinou. 
 clear all 
 close all 
@@ -157,7 +158,8 @@ for mkk=1:length(good_subj_list)
         if length(index8020)>0
             for kkm=1:length(index8020)
                 temp_index=index8020(kkm);
-                % Find the correct response
+                
+                % Find the correct response For ex. (f,2)
                 temp_Mask_CRESP=Mask_CRESP{temp_index, 1}; % char
     %           % Make it string and divide it in two parts 
     %            temp_MCRESP_string = temp_Mask_CRESP{1};
@@ -169,13 +171,13 @@ for mkk=1:length(good_subj_list)
                 temp_MCRESP_position2=temp_MCRESP_parts(2);
 
                 % What did the subject pressed: 
-               temp_pressed1=Mask1_RESP{temp_index,:};
-               temp_pressed2=Mask2_RESP{temp_index,:};
+               temp_pressed1=Mask1_RESP{temp_index,:}; % First press. For ex. 2
+               temp_pressed2=Mask2_RESP{temp_index,:}; % Second press. For ex. f
 
                % What were the reward contingencies of position 1 (from the
                % CRESP)
-               temp_position1=T1RewConting{temp_index,:};
-               temp_position2=T2RewConting{temp_index,:};
+               temp_position1=T1RewConting{temp_index,:}; % for ex, 20Lh
+               temp_position2=T2RewConting{temp_index,:}; % For ex. 80Hh
                
                %RewContingPressed1_80_20=[];
                if strcmp(temp_pressed1, temp_MCRESP_position1)==1
@@ -212,14 +214,69 @@ for mkk=1:length(good_subj_list)
                 Total_percentage20=count20*100/length(index8020); 
                 clear count20
                 disp([( Folder_name) '_' (session_temp) ': Total_percentage of 20Hh is: ' num2str(Total_percentage20)])
-                    results_press1.(Folder_name).(session_temp).press80=Total_percentage80;
-                    results_press1.(Folder_name).(session_temp).press20=Total_percentage20;
+                
+                % Save final results in a structure called results_press1
+                results_press1.(Folder_name).(session_temp).press80.Total_percent80=Total_percentage80;
+                results_press1.(Folder_name).(session_temp).press20.Total_percent20=Total_percentage20;
 %                clear Total_percentage20 Total_percentage80 
 %                clear RewContingPressed1_80_20
         elseif length(double_report)==0,
             results_press1.(Folder_name).(session_temp).press80=0;
             results_press1.(Folder_name).(session_temp).press20=0;
         end %if length index8020>0
+        
+        %% TODO extract the triggers with 80 at first position
+        index80_8020_temp=zeros(1, length(index8020));
+        index20_8020_temp=zeros(1, length(index8020));
+        for kk=1:length(index8020)
+            temp_index=index8020(kk,1);
+            if strcmp(RewContingPressed1_80_20(kk,1), '80Hh')==1
+                index80_8020_temp(kk,1)=temp_index;
+            elseif strcmp(RewContingPressed1_80_20(kk,1), '20Lh')==1
+                index20_8020_temp(kk,1)=temp_index;
+            end
+        end
+        clear kk 
+            index80_8020=index80_8020_temp(index80_8020_temp>0);
+            index20_8020=index20_8020_temp(index20_8020_temp>0);
+            clear index80_8020_temp index20_8020_temp
+            
+            double_two_pr1_80_8020=index80_8020;
+            double_two_pr1_20_8020=index20_8020;
+            clear index80_8020 index20_8020
+            %%  Now to compare with noisy, and to save them in a txt file 
+            %% Make a directory to save all the relevant triggers
+           
+            cd(Analyzed_path_folder) 
+            mkdir('Triggers')
+            cd Triggers
+            
+            savename_text='double_two_pr1_';
+            %create_triggers_in_txt(name, index_trigger_X_final)
+            create_triggers_in_txt('double_two_pr1_80_8020', double_two_pr1_80_8020)
+            create_triggers_in_txt('double_two_pr1_20_8020', double_two_pr1_20_8020)
+
+            disp([Folder_name  ' Double report, 1st press,  Triggers created']);
+            %% TODO compare and remove the NOISY epochs
+
+            %% Select the noisy and unite them with wrong_index 
+            cd(Analyzed_path_folder);
+            % Find the txt with 'Subject'
+            list_txt=dir('Subject*txt'); %SOS ToDO to change ('Subject*Stim*txt')
+            Noisy_temp=list_txt.name;
+            Noisy=load(Noisy_temp);
+            %% End select the Noisy 
+
+            cd('Triggers')
+            listing = dir('double_two_pr1_*0*_8020.txt'); % this creates a structure with all the names of the triggers
+            for jj=1:length(listing)
+                temp_name=listing(jj).name;
+                temp_triggers=load(temp_name);
+                new_temp_triggers=remove_noisy_triggers(Noisy, temp_triggers);
+                create_triggers_in_txt(temp_name(1:end-4), new_temp_triggers);
+            end
+            clear jj temp_triggers new_temp_triggers
+                        
      end % Sessions
   end % For folders
         
@@ -275,7 +332,7 @@ clear kk
     end % End for every subject
 
     cd(Analyzed_path)
-    Tnew=cell2table(T)%, 'VariableNames', header_new);
+    Tnew=cell2table(T);%, 'VariableNames', header_new);
     %filename_to_save_txt=[chanlocs_temp '_' type name_component '_results.txt'];
     filename_to_save_xls=['Double_report_FirstPressed_results.xls'];
     %writetable(Tnew, filename_to_save_txt);

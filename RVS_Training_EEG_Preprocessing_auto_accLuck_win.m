@@ -1,4 +1,4 @@
-% Analyzing EEG dataset for RVS - Training data. 
+% Analyzing EEG dataset for RVS - Training data. For Feedback 
 % November 2015, Maria Stavrinou at PSI, UiO
 % January 2016. This program makes a directory where it saves the different
 % triggers needed for further EEG analysis. For now the selection done is
@@ -32,7 +32,7 @@ Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject2*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -141,11 +141,11 @@ EEG = pop_resample( EEG, 256);
 % 7. Epoch 
 % 
 % Use as baseline a -200 to 0 period 
-extraNameForSet='_Luck_stim';
+extraNameForSet='_Luck';
 Name_Subject_Session=temp22{kk,:};
 temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
 % TODO check if it accepts the temp_epochname below
-trigger='20';
+trigger='50';
 epoch_from_sec=-0.2;%-0.2;
 epoch_to_sec=0.8;%0.8;
 

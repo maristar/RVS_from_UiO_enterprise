@@ -5,6 +5,7 @@
 % triggers. Final results.
 % 28.10. for Stimulus-training analysis IT cannot be run until the noisy
 % triggers are written down. 
+% Updated, checked 17.11.2016
 
 clear all 
 close all 
@@ -16,7 +17,7 @@ Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject115*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -45,7 +46,7 @@ for mkk=1:length(good_subj_list)
     Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\'];
     Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
     cd(Raw_path_folder);
-    for jj=1:length(Sessions)
+    for jj=1%:length(Sessions)
         session_temp=Sessions{jj};
         cd(Raw_Path);
         % We have to move two times inside the folder with the same name to
@@ -89,6 +90,19 @@ for mkk=1:length(good_subj_list)
         all_headers2=table2cell(all_headers);
         clear all_headers
         
+%         %% New automatic start
+%         all_headers=T(1,:);
+%         all_headers2=table2cell(all_headers);
+%         clear all_headers
+%         Mask_CRESP=eprime_to_matlab( T, all_headers2, 'Stim.OnsetDelay');
+%         Mask1_RESP=eprime_to_matlab( T, all_headers2, 'Mask.RESP');
+%         Mask2_RESP=eprime_to_matlab( T, all_headers2,'Mask2.RESP');
+%         RewPair=eprime_to_matlab( T, all_headers2,'RewPair');
+%         [T1RewConting] = eprime_to_matlab( T, all_headers2, 'T1RewConting');
+%         [T2RewConting]=eprime_to_matlab(T, all_headers2, 'T2RewConting');
+%         [TotalAcc]=eprime_to_matlab(T, all_headers2, 'TotACC');
+        %% New automatic end
+        
         % Find for the Feedback Onset delay
         for jjj=1:length(all_headers2)
             a=strcmp(all_headers2{1,jjj}, 'Stim.OnsetDelay');
@@ -126,27 +140,28 @@ for mkk=1:length(good_subj_list)
         
         indexRewMap_table=T(2:end, indexRewMap); % 131 for JackLoe, tested first!
         RewardMap=table2cell(indexRewMap_table);
-        clear indexRewMap
+        %clear indexRewMap
         
        
         %% Calculate the total number of triggers we have 
-        Num_triggers=size(indexRewMap); 
+        Num_triggers=size(RewardMap); 
         Num_triggers=Num_triggers(1);
       
         %% Stim-Training
          % Find accuracy of target. 
          % Go through the indexes of single accuracy and check them for 1 correct.
-         stim_correct=zeros(1, length(Num_triggers));
-         stim_wrong=zeros(1, length(Num_triggers));
-             for kkt=1:length(Num_triggers), 
+         % Corrected 17.11.2016
+         stim_correct=zeros(1, Num_triggers);
+         stim_wrong=zeros(1, Num_triggers);
+             for kkt=1:Num_triggers, 
                  temp_index=kkt;
-                 if strcmp(StimAcc{kkt,1}, '1')==1
+                 if strcmp(StimAcc(kkt,1), '1')==1
                      stim_correct(kkt)=temp_index;
-                 elseif strcmp(StimAcc{kkt,1}, '0')==1
+                 elseif strcmp(StimAcc(kkt,1), '0')==1
                      stim_wrong(kkt)=temp_index;
                  end;
              end
-            clear kkt
+            clear kkt temp_index
             % Find only non zeros
             stim_corr_indexes=stim_correct(stim_correct>0);
             stim_wrong_indexes=stim_wrong(stim_wrong>0);
@@ -156,8 +171,7 @@ for mkk=1:length(good_subj_list)
            stim_50H=zeros(1,length(stim_corr_indexes));
            stim_50L=zeros(1,length(stim_corr_indexes));
            stim_20L=zeros(1,length(stim_corr_indexes));
-             
-            
+                       
           % Geting the triggers
            for kkm=1:length(stim_corr_indexes),
                temp_index=stim_corr_indexes(kkm);
@@ -172,6 +186,7 @@ for mkk=1:length(good_subj_list)
                    case '20Lh'
                         stim_20L(kkm)=temp_index;
                end
+               clear temp_RewardMap
            end
            clear kkm
 
@@ -211,7 +226,7 @@ for mkk=1:length(good_subj_list)
             new_temp_triggers=remove_noisy_triggers(Noisy, temp_triggers);
             create_triggers_in_txt(temp_name(1:end-4), new_temp_triggers);
         end
-clear T
+clear T temp_index temp_name temp_triggers 
     end % For sessions 
     clear T
 end % For folders

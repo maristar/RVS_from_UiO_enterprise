@@ -20,21 +20,23 @@ tic
 % Read the exported e-prime file:
 %% Go to raw directory
 %% Path information
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
+% Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
+Raw_Path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
 %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
 %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
 %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
 %
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 %'/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets/';
 %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/RVS/';
 %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject2*');
 Num_folders=length(listing_raw);
-for kk=1:33% Num_folders
+for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
  
 end
@@ -42,10 +44,12 @@ end
 clear kk listing_raw
 
 % Define which subjects to keep in the analysis for FRN here
-% bad_subject_list=[6,8,18,22,32];
-% good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
+% SOS For new data bad_subject_list=[]
+%bad_subject_list=[6,8,18,22,32];
+bad_subject_list=[];
+good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
-good_subj_list=[6,8,18,22,32];
+%good_subj_list=[6,8,18,22,32];
 Sessions={'Training1', 'Training2'};
 %% Start load
 for mkk=1:length(good_subj_list)
@@ -115,11 +119,11 @@ for mkk=1:length(good_subj_list)
         clear input_data;
         eeglab redraw
 
-        extraNameForSet='_Luck_stim_unfilt';
+        extraNameForSet='_Luck_unfilt';
         Name_Subject_Session=temp22{kk,:};
         temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
         % TODO check if it accepts the temp_epochname below
-        trigger='20';
+        trigger='50';
         epoch_from_sec=-0.2;%-0.2;
         epoch_to_sec=0.8;%0.8;
         EEG = pop_epoch( EEG, {  trigger }, [epoch_from_sec epoch_to_sec], 'newname', temp_epochname, 'epochinfo', 'yes');
