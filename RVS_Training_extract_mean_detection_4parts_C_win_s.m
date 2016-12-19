@@ -6,16 +6,30 @@
 % the mean.
 % Corrected the time_start to take the shorter time_epoch_start.
 % 09.09.2016, Added a new type 'base_peak'
+% 14.12.2016, added bad channels for all 43 subjects. 
 
 clear all 
 close all
 tic
-Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% 
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+% Define new directories to save data and figures
+% Directory for data
+folder_data_save='Results_Training_FRN_P3_43subj';
+cd(Analyzed_path)
+mkdir(folder_data_save)
 
-cd(Raw_path);
+%Directory for figures
+folder_figures_save='Figures_Training_FRN_P3_43subjs';
+cd(Analyzed_path)
+mkdir(folder_figures_save)
+
 %% Define list of Folders - Subjects  
+cd(Raw_path);
 Name_subject_folder='*RVS_Subject*';
 listing_raw=dir(Name_subject_folder);
 Num_folders=length(listing_raw);
@@ -29,9 +43,7 @@ Sessions={'Training1', 'Training2'};
 %% Define the 4 conditions,in alphabetical order so that the listing is in 
 % same order as when matlab uses 'dir' function. Define the names of the 4
 % parts. 
-
 conditions={'Correct', 'HR','LR','Wrong'};
-
 part_names_all={'part_a'; 'part_b'; 'part_c'; 'part_d'};
 
 % % Define empty structure;
@@ -50,8 +62,9 @@ part_names_all={'part_a'; 'part_b'; 'part_c'; 'part_d'};
 % % Great!! It worked!!!
 
 
+
 %% Define which subjects to keep in the analysis for FRN here
-bad_subject_list=[6,8,16,18,22,32];
+bad_subject_list=[6,8,16,18,22,26,32,34,37,40];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %% Define Sessions of interest, here Training1, Training2
@@ -62,7 +75,7 @@ startfolder=1;
 for mkk=startfolder:(length(good_subj_list))
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
-    fprintf(' ***  Working on subject %d: %s\n', num2str(mkk), Folder_name)
+    fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     % Go to the analysis path
     cd(Analyzed_path)
    % For every Session: Training1 or Training2 
@@ -125,7 +138,7 @@ for mkk=startfolder:(length(good_subj_list))
                     % Get the data and the dimensions of it. 
                     % Select smaller timepoints, run only once, at start!
                     % Select smaller timepoints 
-                    if (jjk==startfolder & mm==1 & kk==1 & gg==1)
+                    %if (jjk==startfolder & mm==1 & kk==1 & gg==1)
                         Fs=EEG.srate;
                         chanlocs=EEG.chanlocs; 
                         pre_trigger = EEG.xmin*1000; %msec  EEGLAB has the minus infront, 12.09.2016
@@ -151,8 +164,16 @@ for mkk=startfolder:(length(good_subj_list))
                         % Copenhagen
                         timeVec_msec=timeVec_msec_new;
                         clear timeVec_msec_new;
-                    end
-                          
+                    %end
+                        data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);
+                        nchanGA=size(data, 1);
+                     if nchanGA>5
+                         numchans=[29, 32, 38, 47, 48];
+                         data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
+                         clear data
+                         data=data2;
+                     end
+                     
                     % Save the EEG.data with smaller epoch
                     data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :); 
                     meandata=mean(data, 3);
@@ -164,13 +185,14 @@ for mkk=startfolder:(length(good_subj_list))
         end
     end % Sessions 
 end % Subject
-chanlocs=EEG.chanlocs; 
-
+% chanlocs=EEG.chanlocs; 
+numchans=[29, 32, 38, 47, 48];
+chanlocs=EEG.chanlocs(numchans); 
 
 %% Save the Mean_All_Subjects 
 cd(Analyzed_path)
-mkdir('Mean_All_Subjects')
-cd('Mean_All_Subjects')
+%mkdir('Results_Training_FRN_P3_43subj')
+cd(folder_data_save)
 save Mean_Subjects Mean_Subjects 
 % What else I need 
 save timeVec_msec timeVec_msec
@@ -197,7 +219,7 @@ save chanlocs chanlocs
 
 %% Search for the FRN : 220-350 msec. 
 % Define time limits for the peak detection 
-type='mean';
+type='base_peak';
 peak_start_time=250;
 peak_end_time=300;
 time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
@@ -206,7 +228,7 @@ for mkk=1:(length(good_subj_list))
     jjk=good_subj_list(mkk);
    Folder_name=temp22{jjk,:};
    % For every condition
-   for kk=1:length(conditions)%  : Wrong, Correct,HR, LR
+   for kk=1:length(conditions)%  : Correct,HR, LR, Wrong
        temp_condition=conditions(kk);
        temp_condition_char=char(temp_condition);   
        % For all the parts
@@ -215,7 +237,7 @@ for mkk=1:(length(good_subj_list))
                 part_name_temp_char=char(part_name_temp);         
                 data4channels=Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char);
                 % For all the channels
-                for cc=1:size(data4channels,1); 
+                for cc=1:length(numchans); 
                     chanlocs_temp=chanlocs(cc).labels;
                     temp_chan=data4channels(cc,:);
                     [ final_peak_measure ] = RVS_Training_find_mean_ar_peak_measure_v2(temp_chan, peak_start_time, peak_end_time, Fs, timeVec_msec, type);
@@ -227,8 +249,8 @@ for mkk=1:(length(good_subj_list))
    end
 end
 cd(Analyzed_path)
-cd ('Mean_All_Subjects')
-save Peak_results_FRN Peak_results
+cd(folder_data_save)
+save Peaktobase_results_FRN Peak_results
 
 
 %% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
@@ -298,7 +320,7 @@ for mkk=1:(length(good_subj_list))
                 part_name_temp=part_names_all{gg};
                 part_name_temp_char=char(part_name_temp);         
                 data4channels=Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char);
-                for cc=1:size(data4channels,1);
+                for cc=1:length(numchans);%size(data4channels,1) -if all subjects have the same number of channels
                     chanlocs_temp=chanlocs(cc).labels;
                     temp_chan=data4channels(cc,:);
                     [ final_peak_measure ] = RVS_Training_find_mean_ar_peak_measure_v2(temp_chan, peak_start_time, peak_end_time, Fs, timeVec_msec, type);
@@ -310,8 +332,8 @@ for mkk=1:(length(good_subj_list))
    end
 end
 cd(Analyzed_path)
-cd ('Mean_All_Subjects')
-save Peak_results_P300 Peak_results
+cd(folder_data_save)
+save meanpeak_results_P300 Peak_results
 
 %% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
 % Header sent by Thomas
@@ -357,3 +379,5 @@ for cc=1:length(chanlocs)
     writetable(Tnew, filename_to_save_xls);
     %clear T header_new Tnew
 end % End for chanlocs
+toc
+display(['Took ' num2str(toc/60) ' seconds']);
