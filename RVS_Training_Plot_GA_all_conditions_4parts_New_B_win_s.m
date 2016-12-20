@@ -7,17 +7,20 @@
 
 clear all 
 close all
-profile on
+%profile on
 tic
 % Maria L Stavrinou. 
 %% Path information
 %% Path information
-Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
-%Raw_Path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
-%%RVS_Subject104/Base/';
+% Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% %Raw_Path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
+% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
+% %%RVS_Subject104/Base/';
+% %
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
 %
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 cd(Raw_path);
 %% Define list of Folders - Subjects  
@@ -53,12 +56,12 @@ clear yyy nnn temp_part_name temp_condition
 % Great!! It worked!!!
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,16,18,22,32];
+bad_subject_list=[6,8,16,18,22,32,34,37,40];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 
 %% Start load
-for mkk=1:length(good_subj_list)
+for mkk=28:length(good_subj_list)
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:}; 
     % Print a message on screen to show on which subject we are working
@@ -122,8 +125,8 @@ for mkk=1:length(good_subj_list)
                     eeglab redraw
                     
 
-                    %% Select smaller timepoints, run only once, at start!
-                    if (jjk==1 & mm==1 && kk==1 && gg==1)
+                    %% Select smaller timepoints, run only once, at start! run all times, 141216
+                    %if (jjk==1 & mm==1 && kk==1 && gg==1)
                         Fs=EEG.srate;
                         pre_trigger = EEG.xmin*1000; %msec  EEGLAB has the minus infront, 12.09.2016
                         post_trigger = EEG.xmax*1000; %msec 
@@ -148,14 +151,21 @@ for mkk=1:length(good_subj_list)
                         % Copenhagen
                         timeVec_msec=timeVec_msec_new;
                         clear timeVec_msec_new;
-                    end
+                  %  end
 
                     % Save the EEG.data with smaller epoch
+                    
                     data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);  %TODO
-%                     nchanGA=size(data, 1);
+                     nchanGA=size(data, 1);
+                     if nchanGA>5
+                         numchans=[29, 32, 38, 47, 48];
+                         data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
+                         clear data
+                         data=data2;
+                     end
 %                     ntimeGA=size(data, 2); 
 %                     ntrigsGA=size(data, 3);
-
+                                          
                     % Edw einai ola ta lefta. 
                      dataGA.(temp_condition_char).(part_name_temp_char)=cat(3, dataGA.(temp_condition_char).(part_name_temp_char), data);
                      %% Added Here 12.09.2016 to calculate the Mean_Subjects here and not at the program RVS_Training_Plot_GA_allconditions_4parts_New_B_win_s.m
@@ -186,14 +196,14 @@ end
 
 %% Save the Grand average
 cd(Analyzed_path)
-mkdir('FiguresGA_RVS_Testing_4parts_accLuck')
-cd FiguresGA_RVS_Testing_4parts_accLuck
+mkdir('FiguresGA_RVS_Testing_4parts_accLuck_43subjs')
+cd FiguresGA_RVS_Testing_4parts_accLuck_43subjs
 save dataGA dataGA
 
 %% Save the mean ¨for each subject and condition and parts!
 cd(Analyzed_path)
-mkdir('Mean_All_Subjects')
-cd('Mean_All_Subjects')
+mkdir('Mean_All_Subjects_43subjs')
+cd('Mean_All_Subjects_43subjs')
 save Mean_Subjects Mean_Subjects 
 save new_post_trigger_index new_post_trigger_index
 save new_pre_trigger_index new_pre_trigger_index
@@ -216,12 +226,14 @@ save timeVec_msec timeVec_msec
 % % time_epoch_to_ms_idp=max(time_epoch_to_ms);
 % 
 % % New! Get the electrodes we got!
-chanlocs=EEG.chanlocs; 
+numchans=[29, 32, 38, 47, 48];
+chanlocs=EEG.chanlocs(numchans); 
 clear EEG ALLEEG CURRENTSET CURRENTSTUDY LASTCOM STUDY
 %% Ploting area
 
 % Make where to save
-
+cd(Analyzed_path)
+cd FiguresGA_RVS_Testing_4parts_accLuck_43subjs
 
 % Plots for Correct-Wrong
 for cc=1:length(chanlocs);% [30,37, 38, 47]%  
@@ -244,7 +256,7 @@ for cc=1:length(chanlocs);% [30,37, 38, 47]%
         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_d, 'Linewidth', 2); 
         
         
-        legend('part a','part b', 'part c', 'part d');
+        legend('part a','part b', 'part c', 'part d',  'Location', 'Southeast');
         title_text=[chanlocs(cc).labels '-' temp_condition_char];
         title(title_text);
         axis('tight');

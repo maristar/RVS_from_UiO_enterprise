@@ -31,7 +31,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 %% Look how many subjects we have 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject2*');
+listing_raw=dir('RVS_Subject211*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;

@@ -81,15 +81,15 @@ msec_to_dp=Fs/1000;
             % Step 1. Find the max point between 150 ms and 'P1
             % peak_end_time - 260 msec' (the P1 peak!*)
             % What is the max amplitude value
-            max_P1_value=max(meantempGo(start_point_basepeak_index:P1_peak_end_time_index));
+            max_temp=max(meantempGo(start_point_basepeak_index:P1_peak_end_time_index));
             % What is its index
-            max_P1_index=find(meantempGo==max_P1_value);
+            max__index1=find(meantempGo==max_temp);
                        
             % Step 2. Find the min between this max and the 'peak_end_time'
-            FRN_min_peak=min(meantempGo(max_P1_index:peak_end_time_index));
-            FRN_peak_base=meantempGo(max_P1_index)-FRN_min_peak;
-            peakFRN=FRN_peak_base;
-            % tested on 19122016 subject101 HR part_a
+            base_peak=min(meantempGo(max_P1_index:peak_end_time_index));
+            FRN_peak_base=meantempGo(max_P1_index)-base_peak;
+            peakFRN=base_peak;
+       
     end
     final_peak_measure=peakFRN;
 % For unfiltered signals, you can uncomment the following. 

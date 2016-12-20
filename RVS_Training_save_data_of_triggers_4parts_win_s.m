@@ -12,16 +12,19 @@
 %     Analyzed_path = '/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets/';
 % end
 
-Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+
 %Raw_Path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
 %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
 %%RVS_Subject104/Base/';
-%
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+% Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
+
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 cd(Raw_path);
 
 %% Define list of folders 
-listing_raw=dir('*RVS_Subject*');
+listing_raw=dir('*RVS_Subject2*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -33,12 +36,12 @@ clear kk listing_raw
 Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,16,18,22,32];
+bad_subject_list=[];%6,8,16,18,22,32];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
-
+tic
 %% Start load
-startfolder=1;
+startfolder=6;
 for mkk=startfolder:length(good_subj_list)
     kk=good_subj_list(mkk);
     Subject_filename=temp22{kk,:}; 

@@ -11,13 +11,14 @@ clear all
 close all 
 tic
 %% Path information
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
-
+% Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Raw_Path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject115*');
+listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -33,7 +34,7 @@ fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,16,18,22,32];
+bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %% Start load

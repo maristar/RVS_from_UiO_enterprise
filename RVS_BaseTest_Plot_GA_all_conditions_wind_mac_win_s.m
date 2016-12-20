@@ -17,8 +17,7 @@ listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
- 
-end
+ end
 
 Sessions={'Base', 'Test'};
 
@@ -364,7 +363,7 @@ save chanlocs chanlocs
 %         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_double_one_50L, 'Linewidth', 2, 'LineStyle', ':'); hold on; 
 %         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_double_one_20L, 'Linewidth', 2, 'LineStyle', '--'); 
 %         
-%         legend('80H Base','50H Base', '50L Base','20L Base', '80H Test', '50H Test', '50L Test', '20L Test',http://www.e-radio.gr/post/65100/synanthsh-tsipra-erntogan-giati-den-yphrxe-ellhnikh-shmaia-pics);
+%         legend('80H Base','50H Base', '50L Base','20L Base', '80H Test', '50H Test', '50L Test', '20L Test');
 %         title_text=[chanlocs(cc).labels ' Base vs Test' ]
 %         title(title_text);
 %         axis('tight');
