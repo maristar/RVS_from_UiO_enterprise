@@ -12,7 +12,9 @@
 %
 % Revising this 31.5.2016
 % Revising this 26.08.2016 and adding, how to include Electrode positions, commented
-% Final touch 06.09.2016 version for the stat server at uio
+% Final touch 06.09.2016 version for the stat server at uio; 201216,
+% psi-ts01 server
+% Maria L. Stavrinou 
 
 clear all 
 close all
@@ -20,27 +22,12 @@ tic
 % Read the exported e-prime file:
 %% Go to raw directory
 %% Path information
-% Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-% %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
-% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
-% %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
-% %
-% Analyzed_path='Z:\RVS\Analyzed_datasets\';
-%'/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets/';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/RVS/';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
 Raw_Path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
-%'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
-%'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
-%
-% Analyzed_path='Z:\RVS\Analyzed_datasets\';
 Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
-
+%% Define list of folders 
 cd(Raw_Path)
-% Define list of folders 
-listing_raw=dir('RVS_Subject2*');
+listing_raw=dir('RVS_Subject132*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -49,17 +36,17 @@ end
 % test22=temp22(1,1)
 clear kk listing_raw
 
-% Define which subjects to keep in the analysis for FRN here
-bad_subject_list=[];%[6,8,18,22,32];
+%% Define which subjects to keep in the analysis for FRN here
+bad_subject_list=[]; %[1, 5, 8];%[6,8,18,22,32];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
-
+%% Other definitions 
 Sessions={'Training1', 'Training2'};
 %% Start load
-for mkk=[6 8]%6:length(good_subj_list)
+for mkk=1:length(good_subj_list)
     kk=good_subj_list(mkk);
     Folder_name=temp22{kk,:};
-    fprintf(' ***  Working on subject %d: %s\n', num2str(mkk), Folder_name)
+    fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     % Go to the analysis path
     cd(Analyzed_path)
     % Make a directory for each Subject - to save the results of preprocessing
@@ -153,7 +140,7 @@ extraNameForSet='_Luck_stim';
 Name_Subject_Session=temp22{kk,:};
 temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
 % TODO check if it accepts the temp_epochname below
-trigger='20';
+trigger=20;
 epoch_from_sec=-0.2;%-0.2;
 epoch_to_sec=0.8;%0.8;
 

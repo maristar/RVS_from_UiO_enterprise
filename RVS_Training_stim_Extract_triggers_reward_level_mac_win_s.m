@@ -18,7 +18,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject132*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -28,13 +28,14 @@ clear kk
 cd(Analyzed_path)
 fid=fopen('RVS_Training_stim_4rewlevs_counts_of_triggers.txt', 'wt');
 fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
+% 02.01.2017, unfinished it doesnt fill that with anything. 
 %% Start the mega loop for analysis 
 
 % Define sessions
 Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32];
+bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32]; % ch 02.01.2017
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %% Start load
@@ -44,10 +45,10 @@ for mkk=1:length(good_subj_list)
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
-    Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\'];
+    
     Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
     cd(Raw_path_folder);
-    for jj=1%:length(Sessions)
+    for jj=1:length(Sessions)
         session_temp=Sessions{jj};
         cd(Raw_Path);
         % We have to move two times inside the folder with the same name to
@@ -214,7 +215,7 @@ for mkk=1:length(good_subj_list)
         %% Select the noisy and unite them with wrong_index 
         cd(Analyzed_path_folder);
         % Find the txt with 'Subject'
-        list_txt=dir('Subject*stim*txt'); % 31.10.2016 - TODO HERE TO HAVE DONE THE NOISY TRIGGERS and TO NAME THEM Subject101_Training_stim.txt
+        list_txt=dir('Subject*Stim*txt'); % 31.10.2016 - TODO HERE TO HAVE DONE THE NOISY TRIGGERS and TO NAME THEM Subject101_Training_stim.txt
         Noisy_temp=list_txt.name;
         Noisy=load(Noisy_temp);
         %% End select the Noisy 

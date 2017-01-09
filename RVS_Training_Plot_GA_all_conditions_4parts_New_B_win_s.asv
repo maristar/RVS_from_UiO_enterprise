@@ -145,7 +145,7 @@ for mkk=1:length(good_subj_list)
                         
                         % Select new  pre-trigger
                         new_pre_trigger=-200;
-                        new_post_trigger=post_trigger; %600;
+                        new_post_trigger=600;
                         find_new_pre_trigger=find(timeVec_msec>new_pre_trigger);
                         new_pre_trigger_index=min(find_new_pre_trigger);
 
@@ -241,7 +241,7 @@ cd FiguresGA_RVS_Testing_4parts_accLuck_43subjs
 mkdir(path_figures);
 cd(path_figures);
 
-% Plots for all conditions 
+% Plots for Correct-Wrong
 for cc=1:length(chanlocs);% [30,37, 38, 47]%  
     for kkm=1:length(conditions)
         fig=figure(cc+1); %(cc+length(chanlocs)); 
@@ -282,144 +282,95 @@ for cc=1:length(chanlocs);% [30,37, 38, 47]%
     end
 end
 
-% % % Plots for HR- LR FRN
-% for cc=1:length(chanlocs)   
-%     kkm=2
-%         fig=figure; %(cc+length(chanlocs)); 
-%         set(gca,'colororder',[0 0 1;1 0 0; 1 0 1; 0 1 1; 0 0 1;1 0 0; 1 0 1; 0 1 1],'nextplot','add');
-%         set(gca,'fontsize', 16);
-%         temp_condition=conditions(kkm);
-%         temp_condition_char=char(temp_condition);
-%         
-%         temp_condition_LR=conditions(kkm+1);
-%         temp_condition_LR_char=char(temp_condition_LR);
-%         
-%         % I had detrend and I deleted it. 
-%         %temp_data_to_plot_a=detrend(dataGA.(temp_condition_char).part_a_GA(cc,:));
-%         temp_data_to_plot_a=dataGA.(temp_condition_char).part_a_GA(cc,:);
-%         temp_data_to_plot_b=dataGA.(temp_condition_char).part_b_GA(cc,:);
-%         temp_data_to_plot_c=dataGA.(temp_condition_char).part_c_GA(cc,:);
-%         temp_data_to_plot_d=dataGA.(temp_condition_char).part_d_GA(cc,:);
-%         
-%         temp_LR_data_part_a=dataGA.(temp_condition_LR_char).part_a_GA(cc,:);
-%         temp_LR_data_part_b=dataGA.(temp_condition_LR_char).part_b_GA(cc,:);
-%         temp_LR_data_part_c=dataGA.(temp_condition_LR_char).part_c_GA(cc,:);
-%         temp_LR_data_part_d=dataGA.(temp_condition_LR_char).part_d_GA(cc,:);
-%         
-%         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_c, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_d, 'Linewidth', 2); hold on; 
-%         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_a, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_b, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_c, 'Linewidth', 2, 'LineStyle', '--'); hold on;
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_d, 'Linewidth', 2, 'LineStyle', '--');  
-%         
-%         legend('part a HR','part b HR', 'part c HR', 'part d HR', 'part a LR','part b LR', 'part c LR', 'part d LR', 'Location', 'best');
-%         title_text=[chanlocs(cc).labels '- HR - LR' ];
-%         title(title_text);
-%         axis('tight');
-%         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-%         %text(0,max(temp_data_to_plot_a), 'Feedback');
-%         temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_LR-HR_4_parts_accLuck'];
-%         saveas(fig, temp_save_name_fig, 'png');
-%         saveas(fig, temp_save_name_fig, 'fig');
-%         clear temp_save_name
-%         close(fig)
-% end
-% 
-% 
-% 
-% % % Plots for HR- LR FRN
-% for cc=1:length(chanlocs)   
-%     kkm=2
-%         fig=figure; %(cc+length(chanlocs)); 
-%         set(gca,'colororder',[0 0 1;1 0 0; 1 0 1; 0 1 1; 0 0 1;1 0 0; 1 0 1; 0 1 1],'nextplot','add');
-%         set(gca,'fontsize', 16);
-%         temp_condition=conditions(kkm);
-%         temp_condition_char=char(temp_condition);
-%         
-%         temp_condition_LR=conditions(kkm+1);
-%         temp_condition_LR_char=char(temp_condition_LR);
-%         
-%         % I had detrend and I deleted it. 
-%         %temp_data_to_plot_a=detrend(dataGA.(temp_condition_char).part_a_GA(cc,:));
-%         temp_data_to_plot_a=dataGA.(temp_condition_char).part_a_GA(cc,:);
-%         temp_data_to_plot_b=dataGA.(temp_condition_char).part_b_GA(cc,:);
-%         temp_data_to_plot_c=dataGA.(temp_condition_char).part_c_GA(cc,:);
-%         temp_data_to_plot_d=dataGA.(temp_condition_char).part_d_GA(cc,:);
-%         
-%         temp_LR_data_part_a=dataGA.(temp_condition_LR_char).part_a_GA(cc,:);
-%         temp_LR_data_part_b=dataGA.(temp_condition_LR_char).part_b_GA(cc,:);
-%         temp_LR_data_part_c=dataGA.(temp_condition_LR_char).part_c_GA(cc,:);
-%         temp_LR_data_part_d=dataGA.(temp_condition_LR_char).part_d_GA(cc,:);
-%         
-%         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_c, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_d, 'Linewidth', 2); hold on; 
-%         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_a, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_b, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_c, 'Linewidth', 2, 'LineStyle', '--'); hold on;
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_d, 'Linewidth', 2, 'LineStyle', '--');  
-%         
-%         legend('part a HR','part b HR', 'part c HR', 'part d HR', 'part a LR','part b LR', 'part c LR', 'part d LR', 'Location', 'best');
-%         title_text=[chanlocs(cc).labels '- HR - LR' ];
-%         title(title_text);
-%         axis('tight');
-%         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-%         %text(0,max(temp_data_to_plot_a), 'Feedback');
-%         temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_LR-HR_4_parts_accLuck'];
-%         saveas(fig, temp_save_name_fig, 'png');
-%         saveas(fig, temp_save_name_fig, 'fig');
-%         clear temp_save_name
-%         close(fig)
-% end
-% 
-% 
-% % Plot only for Day 1 
-% for cc=1:length(chanlocs)   % [30, 37, 38, 47]%
-%     kkm=2
-%         fig=figure; %(cc+length(chanlocs)); 
-%         set(gca,'colororder',[0 0 1;0 1 1],'nextplot','add');
-%         set(gca,'fontsize', 16);
-%         temp_condition=conditions(kkm);
-%         temp_condition_char=char(temp_condition);
-%         
-%         temp_condition_LR=conditions(kkm+1);
-%         temp_condition_LR_char=char(temp_condition_LR);
-%         
-%         temp_data_to_plot_a=dataGA.(temp_condition_char).part_a_GA(cc,:);
-%         temp_data_to_plot_b=dataGA.(temp_condition_char).part_b_GA(cc,:);
-%         
-%         
-%         temp_LR_data_part_a=dataGA.(temp_condition_LR_char).part_a_GA(cc,:);
-%         temp_LR_data_part_b=dataGA.(temp_condition_LR_char).part_b_GA(cc,:);
-%         
-%         
-%         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2); hold on; 
-%         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_a, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_b, 'Linewidth', 2, 'LineStyle', '--');  
-%         
-%         
-%         legend('part a HR','part b HR', 'part a LR','part b LR', 'Location', 'best');
-%         title_text=[chanlocs(cc).labels '- HR - LR - day 1' ];
-%         title(title_text);
-%         axis('tight');
-%         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-%         %text(0,max(temp_data_to_plot_a),0, 'Feedback');
-%         temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_LR-HR_day1_accLuck'];
-%         saveas(fig, temp_save_name_fig, 'png');
-%         saveas(fig, temp_save_name_fig, 'fig');
-%         clear temp_save_name
-%         close(fig)
-% end
-% 
-% toc
+
+% % Plots for HR- LR FRN
+for cc=1:length(chanlocs)   
+    kkm=2
+        fig=figure; %(cc+length(chanlocs)); 
+        set(gca,'colororder',[0 0 1;1 0 0; 1 0 1; 0 1 1; 0 0 1;1 0 0; 1 0 1; 0 1 1],'nextplot','add');
+        set(gca,'fontsize', 16);
+        temp_condition=conditions(kkm);
+        temp_condition_char=char(temp_condition);
+        
+        temp_condition_LR=conditions(kkm+1);
+        temp_condition_LR_char=char(temp_condition_LR);
+        
+        % I had detrend and I deleted it. 
+        %temp_data_to_plot_a=detrend(dataGA.(temp_condition_char).part_a_GA(cc,:));
+        temp_data_to_plot_a=dataGA.(temp_condition_char).part_a_GA(cc,:);
+        temp_data_to_plot_b=dataGA.(temp_condition_char).part_b_GA(cc,:);
+        temp_data_to_plot_c=dataGA.(temp_condition_char).part_c_GA(cc,:);
+        temp_data_to_plot_d=dataGA.(temp_condition_char).part_d_GA(cc,:);
+        
+        temp_LR_data_part_a=dataGA.(temp_condition_LR_char).part_a_GA(cc,:);
+        temp_LR_data_part_b=dataGA.(temp_condition_LR_char).part_b_GA(cc,:);
+        temp_LR_data_part_c=dataGA.(temp_condition_LR_char).part_c_GA(cc,:);
+        temp_LR_data_part_d=dataGA.(temp_condition_LR_char).part_d_GA(cc,:);
+        
+        
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_c, 'Linewidth', 2); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_d, 'Linewidth', 2); hold on; 
+        
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_a, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_b, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_c, 'Linewidth', 2, 'LineStyle', '--'); hold on;
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_d, 'Linewidth', 2, 'LineStyle', '--');  
+        
+        legend('part a HR','part b HR', 'part c HR', 'part d HR', 'part a LR','part b LR', 'part c LR', 'part d LR', 'Location', 'best');
+        title_text=[chanlocs(cc).labels '- HR - LR' ];
+        title(title_text);
+        axis('tight');
+        SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+        %text(0,max(temp_data_to_plot_a), 'Feedback');
+        temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_LR-HR_4_parts_accLuck'];
+        saveas(fig, temp_save_name_fig, 'png');
+        saveas(fig, temp_save_name_fig, 'fig');
+        clear temp_save_name
+        close(fig)
+end
+
+
+% Plot only for Day 1 
+for cc=1:length(chanlocs)   % [30, 37, 38, 47]%
+    kkm=2
+        fig=figure; %(cc+length(chanlocs)); 
+        set(gca,'colororder',[0 0 1;0 1 1],'nextplot','add');
+        set(gca,'fontsize', 16);
+        temp_condition=conditions(kkm);
+        temp_condition_char=char(temp_condition);
+        
+        temp_condition_LR=conditions(kkm+1);
+        temp_condition_LR_char=char(temp_condition_LR);
+        
+        temp_data_to_plot_a=dataGA.(temp_condition_char).part_a_GA(cc,:);
+        temp_data_to_plot_b=dataGA.(temp_condition_char).part_b_GA(cc,:);
+        
+        
+        temp_LR_data_part_a=dataGA.(temp_condition_LR_char).part_a_GA(cc,:);
+        temp_LR_data_part_b=dataGA.(temp_condition_LR_char).part_b_GA(cc,:);
+        
+        
+        
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2); hold on; 
+        
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_a, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_LR_data_part_b, 'Linewidth', 2, 'LineStyle', '--');  
+        
+        
+        legend('part a HR','part b HR', 'part a LR','part b LR', 'Location', 'best');
+        title_text=[chanlocs(cc).labels '- HR - LR - day 1' ];
+        title(title_text);
+        axis('tight');
+        SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+        %text(0,max(temp_data_to_plot_a),0, 'Feedback');
+        temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_LR-HR_day1_accLuck'];
+        saveas(fig, temp_save_name_fig, 'png');
+        saveas(fig, temp_save_name_fig, 'fig');
+        clear temp_save_name
+        close(fig)
+end
+
+toc

@@ -24,7 +24,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 cd(Raw_path);
 
 %% Define list of folders 
-listing_raw=dir('*RVS_Subject2*');
+listing_raw=dir('*RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -37,11 +37,12 @@ Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
 bad_subject_list=[];%6,8,16,18,22,32];
+bad_subject_list=[6,8,13,14,15,16,18,19,22,26]; % for Stim
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 tic
 %% Start load
-startfolder=6;
+startfolder=1;
 for mkk=startfolder:length(good_subj_list)
     kk=good_subj_list(mkk);
     Subject_filename=temp22{kk,:}; 
@@ -62,7 +63,7 @@ for mkk=startfolder:length(good_subj_list)
         cd Triggers
         %% Find triggers -make this search only for the first time
         if (kk==startfolder & jj==1)
-            listing_raw=dir('triggers*txt');
+            listing_raw=dir('stim_*_corr.txt');
             Num_files=length(listing_raw);
             for kkm=1:Num_files
                 temp23{kkm,:}=listing_raw(kkm).name;
@@ -105,13 +106,19 @@ for mkk=startfolder:length(good_subj_list)
                     %TODO to search with 'dir , detect DC_epochs, stop
                     %there
                     cd(Analyzed_path_folder)
-                    list_filename=dir('*_256__Luck.set');  % TODO ADD AS ARGUMENT
+                    list_filename=dir('*_256__Luck_stim.set');  % TODO ADD AS ARGUMENT
                 
                     Name_to_load=list_filename.name;
                     %[Subject_filename_session '_128_ch_DC_epochs_tr50_auto_5_chan_filt_FRN.set']
                     EEG = pop_loadset('filename', Name_to_load,'filepath',Analyzed_path_folder);
                     EEG = eeg_checkset( EEG );
                     eeglab redraw
+                    
+                    % In Subject102, TRaining2, numtrials=799, and one was
+                    % having the 800 trial inside. to solve this we do the
+                    % following:
+                    num_trials_in_eeg=EEG.trials;
+                    temp_trials=temp_trials(temp_trials<num_trials_in_eeg+1);
                     
                     % End loading the original EEG set that we need
                     EEG = pop_select( EEG,'trial', temp_trials');
