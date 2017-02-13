@@ -19,7 +19,7 @@ close all
 tic
 % Read the exported e-prime file:
 %% Go to raw directory
-%% Path information
+%% Path information|
 % Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
 Raw_Path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
 %'/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
@@ -34,7 +34,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject2*');
+listing_raw=dir('RVS_Subject128*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -119,11 +119,11 @@ for mkk=1:length(good_subj_list)
         clear input_data;
         eeglab redraw
 
-        extraNameForSet='_Luck_unfilt';
+        extraNameForSet='_Luck_stim_unfilt';
         Name_Subject_Session=temp22{kk,:};
         temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
         % TODO check if it accepts the temp_epochname below
-        trigger='50';
+        trigger='20';
         epoch_from_sec=-0.2;%-0.2;
         epoch_to_sec=0.8;%0.8;
         EEG = pop_epoch( EEG, {  trigger }, [epoch_from_sec epoch_to_sec], 'newname', temp_epochname, 'epochinfo', 'yes');

@@ -23,9 +23,9 @@ Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
 Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 % Path to save the figures 
-path_figures='Figures_GA_Training_Stim_4parts_accLuck_43subjs';
+path_figures='Figures_GA_Training_Stim_4parts_Stim_triggers_all_43subjs';
 % Path to save the data of GA 
-path_dataGA='Data_GA_Training_Stim_4parts_accLuck_43subjs';
+path_dataGA='Data_GA_Training_Stim_4parts_Stim_triggers_all_43subjs';
 
 %% Define list of Folders - Subjects  
 cd(Raw_path);
@@ -43,7 +43,7 @@ Sessions={'Training1', 'Training2'};
 %% Define the 4 conditions,in alphabetical order so that the listing is in 
 % same order as when matlab uses 'dir' function.
 % conditions={'Correct', 'HR','LR','Wrong'}; % For FRN 
-conditions={'stim_20L_corr', 'stim_50L_corr','stim_50H_corr','stim_80H_corr'}; % For Stim
+conditions={'stim_triggers_all'}%{'stim_20L_corr', 'stim_50L_corr','stim_50H_corr','stim_80H_corr'}; % For Stim
 part_names_all={'part_a'; 'part_b'; 'part_c'; 'part_d'};
 
 % Define empty structure dataGA;
@@ -232,20 +232,22 @@ save timeVec_msec timeVec_msec
 % % New! Get the electrodes we got!
 numchans=[29, 32, 38, 47, 48];
 chanlocs=EEG.chanlocs(numchans); 
+save chanlocs chanlocs
 clear EEG ALLEEG CURRENTSET CURRENTSTUDY LASTCOM STUDY
 %% Ploting area
 
 % Make where to save
 cd(Analyzed_path)
-cd FiguresGA_RVS_Testing_4parts_accLuck_43subjs
+%cd FiguresGA_RVS_Testing_4parts_stim_triggers_all_43subjs
 mkdir(path_figures);
 cd(path_figures);
 
 % Plots for all conditions 
-for cc=1:length(chanlocs);% [30,37, 38, 47]%  
+for cc=1:length(numchans);% [30,37, 38, 47]%  
     for kkm=1:length(conditions)
         fig=figure(cc+1); %(cc+length(chanlocs)); 
-        set(gca,'colororder',[0 0 1;1 0 0; 1 0 1; 0 1 1],'nextplot','add');
+        %set(gca,'colororder',[0 0 1;1 0 0; 1 0 1; 0 1 1],'nextplot','add');
+        set(gca,'colororder',[0 0 1;0 0 1; 0 0 1; 0 0 1],'nextplot','add');
         set(gca,'fontsize', 16);
         temp_condition=conditions(kkm);
         temp_condition_char=char(temp_condition);
@@ -256,13 +258,13 @@ for cc=1:length(chanlocs);% [30,37, 38, 47]%
         temp_data_to_plot_c=dataGA.(temp_condition_char).part_c_GA(cc,:);
         temp_data_to_plot_d=dataGA.(temp_condition_char).part_d_GA(cc,:);
         
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_c, 'Linewidth', 2); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_d, 'Linewidth', 2); 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_a, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_b, 'Linewidth', 2, 'LineStyle', ':'); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_c, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
+        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_d, 'Linewidth', 2, 'LineStyle', '-.'); 
         
         
-        legend('part a','part b', 'part c', 'part d',  'Location', 'Southeast');
+        legend('part a','part b', 'part c', 'part d',  'Location', 'best');
         title_text=[chanlocs(cc).labels '-' temp_condition_char];
         for jj=1:length(title_text); 
             if ( title_text(jj)=='_' || title_text(jj)==' '); title_text(jj)='-';
@@ -274,7 +276,7 @@ for cc=1:length(chanlocs);% [30,37, 38, 47]%
         axis('tight');
         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
         %text(0,max(temp_data_to_plot_a), 'Feedback');
-        temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_' temp_condition_char '_4_parts_accLuck'];
+        temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_' temp_condition_char '_4_parts_accLuck_symbols2'];
         saveas(fig, temp_save_name_fig, 'png');
         saveas(fig, temp_save_name_fig, 'fig');
         clear temp_save_name

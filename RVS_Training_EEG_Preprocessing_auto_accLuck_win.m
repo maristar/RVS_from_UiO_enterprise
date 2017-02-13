@@ -27,7 +27,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 %% Define list of folders 
 cd(Raw_Path)
-listing_raw=dir('RVS_Subject132*');
+listing_raw=dir('RVS_Subject118*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -38,7 +38,14 @@ clear kk listing_raw
 
 %% Define which subjects to keep in the analysis for FRN here
 bad_subject_list=[]; %[1, 5, 8];%[6,8,18,22,32];
-good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
+good_subj_list=[];%13 14 15 18 19 22 26 28 34 36 37 41];
+for kk=1:Num_folders, 
+    if ~ismember(kk, bad_subject_list), 
+        good_subj_list=[good_subj_list kk]; 
+    end; 
+end
+
+
 
 %% Other definitions 
 Sessions={'Training1', 'Training2'};
@@ -175,6 +182,24 @@ EEG.setname=temp_epochname;
         cd(Analyzed_path)
         cd(temp22{kk,1})
         % Make a directory for each session -Training1 or Training2
+        
+        % Add electrode locations
+        %EEG=pop_chanedit(EEG, 'lookup','Y:\\Prosjekt\\RVS_43_subjects\\Matlab_programs\\eeglab_sml_v3\\eeglab_sml_v3\\plugins\\dipfit2.3\\standard_BESA\\standard-10-5-cap385.elp');
+        
+        % Run icA 
+        [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG, CURRENTSET);
+%         EEG=pop_chanedit(EEG, 'lookup','Y:\\Prosjekt\\RVS_43_subjects\\Matlab_programs\\eeglab_sml_v3\\eeglab_sml_v3\\plugins\\dipfit2.3\\standard_BESA\\standard-10-5-cap385.elp');
+%         [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+%         EEG = eeg_checkset( EEG );
+%         EEG = pop_saveset( EEG, 'savemode','resave');
+%         [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+        EEG = eeg_checkset( EEG );
+        EEG = pop_select( EEG,'nochannel',{'EXG3' 'EXG4'});
+        [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'overwrite','on','gui','off'); 
+        EEG = eeg_checkset( EEG );
+        EEG = pop_runica(EEG, 'extended',1,'interupt','on');
+        [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+        
         mkdir(session_temp)
         cd(session_temp)
         EEG = pop_saveset(EEG, 'filename', temp_epochname);

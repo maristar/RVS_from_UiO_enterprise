@@ -43,7 +43,12 @@ Sessions={'Training1', 'Training2'};
 %% Define the 4 conditions,in alphabetical order so that the listing is in 
 % same order as when matlab uses 'dir' function. Define the names of the 4
 % parts. 
-conditions={'Correct', 'HR','LR','Wrong'};
+% conditions={'Correct', 'HR','LR','Wrong'}; for FRN
+conditions={'stim_20L_corr', 'stim_50H_corr', 'stim_50L_corr', 'stim_80H_corr'};
+
+conditions_short={'20L', '50H', '50L', '80H'};
+
+%conditions={'Correct', 'HR','LR','Wrong'};
 part_names_all={'part_a'; 'part_b'; 'part_c'; 'part_d'};
 
 % % Define empty structure;
@@ -64,7 +69,8 @@ part_names_all={'part_a'; 'part_b'; 'part_c'; 'part_d'};
 
 
 %% Define which subjects to keep in the analysis for FRN here
-bad_subject_list=[6,8,16,18,22,26,32,34,37,40];
+bad_subject_list=[6,8,13,14,15,16,18,19,22,26,28]; % for Stim
+% bad_subject_list=[6,8,16,18,22,26,32,34,37,40];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %% Define Sessions of interest, here Training1, Training2
@@ -91,7 +97,7 @@ for mkk=startfolder:(length(good_subj_list))
         end
         
         % Define the new paths            
-        Analyzed_path_folder=[Analyzed_path '\' temp22{jjk,:} '\' session_temp '\'];
+        Analyzed_path_folder=[Analyzed_path  temp22{jjk,:} '\' session_temp '\'];
         Raw_path_folder=[Raw_path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp '\'];
         
         
@@ -102,7 +108,7 @@ for mkk=startfolder:(length(good_subj_list))
             % Go the Analyzed_path_folder for each subject
             % and search for the set files for each AX, AY condition
             cd(Analyzed_path_folder)
-            Search_for_folder=['*_256__Luck_triggers_' temp_condition_char '*part*.set'];
+            Search_for_folder=['*_256__Luck_stim_' temp_condition_char '*part*.set'];
             listing_sets=dir(Search_for_folder);
             
             % The program must have found 2 sets, one for part_a and one
@@ -256,9 +262,9 @@ save Peaktobase_results_FRN Peak_results
 %% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
 % Header sent by Thomas
 %header={'Subject_Num','CPz_Correct_a','CPz_Correct_b', 'CPz_Correct_c',	'CPz_Correct_d', 'CPz_Incorrect_a',	'CPz_Incorrect_b',	'CPz_Incorrect_c',	'CPz_Incorrect_d','CPz_HR_a', 'CPz_HR_b','CPz_HR_c','CPz_HR_d',	'CPz_LR_a',	'CPz_LR_b',	'CPz_LR_c',	'CPz_LR_d'};
-header_raw={'Subject_Num','_Correct_a','_Correct_b', '_Correct_c',	'_Correct_d', '_Incorrect_a',	'_Incorrect_b',	'_Incorrect_c',	'_Incorrect_d','_HR_a', '_HR_b','_HR_c','_HR_d','_LR_a',	'_LR_b',	'_LR_c',	'_LR_d'};
+%header_raw={'Subject_Num','_Correct_a','_Correct_b', '_Correct_c',	'_Correct_d', '_Incorrect_a',	'_Incorrect_b',	'_Incorrect_c',	'_Incorrect_d','_HR_a', '_HR_b','_HR_c','_HR_d','_LR_a',	'_LR_b',	'_LR_c',	'_LR_d'};
 % We change the order of conditions here in order to be able to 
-conditions={'Correct', 'Wrong', 'HR','LR',};
+%conditions={'Correct', 'Wrong', 'HR','LR',};
 
 for cc=1:length(chanlocs)
     chanlocs_temp=chanlocs(cc).labels;    

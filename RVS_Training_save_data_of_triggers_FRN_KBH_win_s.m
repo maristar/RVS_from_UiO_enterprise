@@ -25,7 +25,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 cd(Raw_Path)
 % Define list of folders 
 clear temp22 
-listing_raw=dir('RVS_Subject130*');
+listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -39,13 +39,14 @@ Sessions={'Training1', 'Training2'};
 
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32]; % for Stim
+%bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32]; % for Stim
+bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017  for Stim
 %bad_subject_list=[6,8,16,18,22,32]; % for FRN
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 
 %% Start load
-for mkk=1:length(good_subj_list)
+for mkk=10%:length(good_subj_list)
     kk=good_subj_list(mkk);
     Subject_filename=temp22{kk,:}; 
     % Print a message on screen to show on which subject we are working

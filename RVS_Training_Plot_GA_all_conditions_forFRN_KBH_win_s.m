@@ -14,14 +14,19 @@ tic
 %
 %Analyzed_path='/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets_FRN_1_20Hz/';
 %'/Users/mstavr
-%'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
+% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
+% 
+% Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% 
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
-Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+
+Raw_Path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 %Raw_Path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
 %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/RVS/'; 
 %%RVS_Subject104/Base/';
 %
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
 cd(Raw_path);
 %% Define list of Folders - Subjects  
 Name_subject_folder='RVS_Subject*';

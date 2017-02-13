@@ -63,14 +63,15 @@ for mkk=startfolder:length(good_subj_list)
         cd Triggers
         %% Find triggers -make this search only for the first time
         if (kk==startfolder & jj==1)
-            listing_raw=dir('stim_*_corr.txt');
+            %listing_raw=dir('stim_*_corr.txt');
+            listing_raw=dir('stim_triggers_all.txt');
             Num_files=length(listing_raw);
             for kkm=1:Num_files
                 temp23{kkm,:}=listing_raw(kkm).name;
             end
             clear kkm
         end
-        %% End finding triggers
+
         
         %% Start defining part names
         if strcmp(session_temp, 'Training1')

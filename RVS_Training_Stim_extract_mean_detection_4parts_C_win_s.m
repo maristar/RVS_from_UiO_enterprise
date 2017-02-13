@@ -292,6 +292,44 @@ save data_Properties data_Properties
 %     temp_condition ...
 %     temp_condition_char
 
+%% Search for the P1: 90-140 msec. 
+% Define time limits for the peak detection 
+name_component='P1';
+type='mean';
+peak_start_time=250;
+peak_end_time=300;
+time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+
+[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+
+clear Peak_results Tnew
+
+%% Search for the N1: 90-140 msec. 
+% Define time limits for the peak detection 
+name_component='N1';
+type='mean';
+peak_start_time=150;
+peak_end_time=200;
+time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+
+[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+
+clear Peak_results Tnew
+
+%% Search for the P2: 200-250 msec. 
+% Define time limits for the peak detection 
+name_component='P2';
+type='mean';
+peak_start_time=200;
+peak_end_time=250;
+time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+
+[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+
+clear Peak_results Tnew
 %% Search for the FRN or N2(Stim) : 250-300 msec. 
 % Define time limits for the peak detection 
 name_component='N2';
@@ -331,7 +369,7 @@ clear Peak_results Tnew
 
 %%  Peak detection 
 name_component='N3';
-type='min';
+type='mean';
 peak_start_time=430;
 peak_end_time=490;
 time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
@@ -342,4 +380,3 @@ time_end=new_post_trigger; %600; % TODO sth here why it is deleted
 clear Peak_results Tnew
 
 toc
-display(['Took ' num2str(toc/60) ' seconds']);

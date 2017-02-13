@@ -10,32 +10,34 @@ clear all
 close all 
 tic
 %% Path information
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+% Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
+Raw_Path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
 
 cd(Raw_Path)
 % Define list of folders 
 listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
-for kk=1:33%Num_folders
+for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
  end
 clear kk 
-%% Make a document to write the number of triggers in each condition
-cd(Analyzed_path)
-fid=fopen('RVS_BT_4rewlevs_counts_of_triggers.txt', 'wt');
-fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
+% %% Make a document to write the number of triggers in each condition
+% cd(Analyzed_path)
+% fid=fopen('RVS_BT_4rewlevs_counts_of_triggers.txt', 'wt');
+% fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 %% Start the mega loop for analysis 
 
 % Define sessions
 Sessions={'Base', 'Test'};
 
 % Define which subjects are good and which are bad. 
-bad_subject_list=[16, 26]; %[7, 9, 13, 16, 17, 19, 20, 24, 30];
+bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30, 34, 36, 42];
 % Old correct_folders=[startfolder 2:6 8:12 14 15 18 21:29 31:33];
 good_subj_list=[]; 
-for kk=1:33% Num_folders, 
+for kk=1:Num_folders, 
     if ~ismember(kk, bad_subject_list), 
         good_subj_list=[good_subj_list kk]; 
     end; 
@@ -68,6 +70,7 @@ for mkk=1:length(good_subj_list)
         % Go to Raw_path_folder
         cd(Raw_path_folder);
         if jjk>3
+            clear T
             %disp('Subject104 and up')
             % Load the exported edat2 file (later named Tfinal).
             listing_raw2=dir('*matlab.txt');
@@ -86,6 +89,7 @@ for mkk=1:length(good_subj_list)
             'Delimiter','\t','ReadVariableNames',false);
             clear Filename_matlab
         elseif jjk<4
+            clear T
             load('T.mat')
         end
         
