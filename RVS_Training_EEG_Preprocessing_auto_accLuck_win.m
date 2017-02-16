@@ -27,7 +27,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 %% Define list of folders 
 cd(Raw_Path)
-listing_raw=dir('RVS_Subject118*');
+listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;

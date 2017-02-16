@@ -46,7 +46,7 @@ good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), goo
 
 
 %% Start load
-for mkk=10%:length(good_subj_list)
+for mkk=35:length(good_subj_list)
     kk=good_subj_list(mkk);
     Subject_filename=temp22{kk,:}; 
     % Print a message on screen to show on which subject we are working
@@ -82,7 +82,7 @@ for mkk=10%:length(good_subj_list)
                 % Load the original EEG set that we need  
                 cd(Analyzed_path_folder)
                 %list_filename=dir('*_256__Luck.set');  % TODO ADD AS ARGUMENT For FRN
-                list_filename=dir('*_256__Luck_stim.set');  % TODO ADD AS ARGUMENT For Stim
+                list_filename=dir('*_256__Luck_stim_ICA.set');  % TODO ADD AS ARGUMENT For Stim
                 Name_to_load=list_filename.name;
                 %[Subject_filename_session '_128_ch_DC_epochs_tr50_auto_5_chan_filt_FRN.set']
                 EEG = pop_loadset('filename', Name_to_load,'filepath',Analyzed_path_folder);
@@ -99,7 +99,7 @@ for mkk=10%:length(good_subj_list)
                 
                 % Start selecting the trials we need
                 EEG = pop_select( EEG,'trial', temp_trials');
-                temp_setname=[EEG.setname '_' temp23{kkj}(1:end-4)];
+                temp_setname=[EEG.filename(1:end-4) '_' temp23{kkj}(1:end-4)];
                 EEG.setname=temp_setname; %'RVS_Subject105_Base_512_ch_DC_epochs_tr2_auto_double_tr_2_corr';
                 EEG = eeg_checkset( EEG );
                 eeglab redraw
@@ -117,7 +117,7 @@ for mkk=10%:length(good_subj_list)
                 % eeglab redraw
                 % Save Matlab array for further processing.
                 data=EEG.data;
-                temp_Namesave=[Subject_filename '_' temp23{kkj} '.mat'];
+                temp_Namesave=[temp_setname '.mat'];
                 %save temp_Namesave data
                 eval(['save ' temp_Namesave ' data Name_to_save'])
         else 

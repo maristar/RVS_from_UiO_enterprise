@@ -18,7 +18,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject132*');
+listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -35,13 +35,13 @@ fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32]; % ch 02.01.2017
+bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %% Start load
-startfolder=1;
+startfolder=15;
 
-for mkk=1:length(good_subj_list)
+for mkk=startfolder:length(good_subj_list)
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
