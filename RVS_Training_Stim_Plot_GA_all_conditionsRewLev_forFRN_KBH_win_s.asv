@@ -296,39 +296,16 @@ end
 % end
 
 
-% Find the maximum channel, amplitude and latency 
-display('20L :')
-data=GA_EEGdata_stim20L;
-[ latency_max20L  amplitude_max20L electrode_max20L] = RVS_find_max_fromGA( data, chanlocs, timeVec_msec );
-clear data
+% Find the maximum channel, amplitude and 
 
-% For the 50L
-display('50L :')
-data=GA_EEGdata_stim50L;
-[ latency_max50L  amplitude_max50L electrode_max50L] = RVS_find_max_fromGA( data, chanlocs, timeVec_msec );
-clear data
-
-% For the 50H
-display('50H :')
-data=GA_EEGdata_stim50L;
-[ latency_max50H  amplitude_max50H electrode_max50H] = RVS_find_max_fromGA( data, chanlocs, timeVec_msec );
-clear data
-
-% For the 50H
-display('80H :')
-data=GA_EEGdata_stim80H;
-[ latency_max80H  amplitude_max80H electrode_max80H] = RVS_find_max_fromGA( data, chanlocs, timeVec_msec );
-clear data
 
 % % Save data for wavelets or topoplots of GA data 
 % Commented because I prefer unfiltered data for wavelets
-save dataGA_stim20L GA_EEGdata_stim20L -v7.3
+save dataGA_stim20L GA_EEGdata_stim20L
 save dataGA_stim50L GA_EEGdata_stim50L -v7.3
-save dataGA_stim50H GA_EEGdata_stim50H -v7.3
-save dataGA_stim80H GA_EEGdata_stim80H -v7.3
+save dataGA_stim50H GA_EEGdata_stim50H
+save dataGA_stim80H GA_EEGdata_stim80H
 save timeVect_msec timeVec_msec
 save chanlocs chanlocs
-
-
 
 toc

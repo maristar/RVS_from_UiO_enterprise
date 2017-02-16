@@ -1,4 +1,4 @@
-eeglab% 2 June 2016. 
+% 2 June 2016. 
 % Maria L Stavrinou. 
 %% Path information
 Raw_Path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/';
