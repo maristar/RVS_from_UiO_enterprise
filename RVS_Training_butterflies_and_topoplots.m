@@ -26,19 +26,19 @@ saveas(fig3, temp_save_name_fig, 'fig');
 %close(fig3)
 
 
-%% Define time limits and ask for them FRN
+%% Define time limits and ask for them 
 name_component='P3b, peak 700 msec';
 timeinmsec=700.00;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 
-%% Define time limits and ask for them FRN
+%% Define time limits and ask for them 
 name_component='P3a';
 timeinmsec=351;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 
-%% Define time limits and ask for them FRN
+%% Define time limits and ask for them 
 name_component='N1';
 text_for_condition='Test'
 timeinmsec=175.8;

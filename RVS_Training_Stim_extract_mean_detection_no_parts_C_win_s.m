@@ -294,6 +294,18 @@ save data_Properties data_Properties
 %     temp_condition ...
 %     temp_condition_char
 
+%% Define time limits for the peak detection 
+name_component='N1';
+type='mean';
+peak_start_time=interval_N1_1;
+peak_end_time=300;
+time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+
+[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+
+
+
 %% Search for the FRN or N2(Stim) : 250-300 msec. 
 % Define time limits for the peak detection 
 name_component='N2';

@@ -1,7 +1,7 @@
 function topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
     %% Define time limits and ask for them FRN
     index=find_index_intime(timeVec_msec, timeinmsec);
-    fig1=figure; topoplot(EEG.data(:, index), EEG.chanlocs, 'maplimits', [-3 3]);
+    fig1=figure; topoplot(EEG.data(:, index), EEG.chanlocs, 'maplimits', [-10 10]);
     title(['Grand-average ' name_component '-' text_for_condition]);
     xlabel('Time(ms)'); ylabel('Amplitude (uV)'); colorbar; 
     temp_save_name_fig=['GA_topoplot_' name_component '_' text_for_condition] ;
