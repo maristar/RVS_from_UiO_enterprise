@@ -174,17 +174,17 @@ for mkk=startfolder:(length(good_subj_list))
                          data=data2;
                      end
                      
-                    % Save the EEG.data with smaller epoch
-                    data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :); 
+                    % Make the mean out of it. 
                     meandata=mean(data, 3);
                     Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char)=meandata;
                     clear data
-                end
+                end % For "if we are right"
               
-            end
-        end
-    end % Sessions 
-end % Subject
+            end % For gg
+        end % For conditions
+    end % For Sessions 
+end % For Subjects
+
 % chanlocs=EEG.chanlocs; 
 numchans=[29, 32, 38, 47, 48];
 chanlocs=EEG.chanlocs(numchans); 

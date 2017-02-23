@@ -34,7 +34,7 @@ data_Properties.Raw_path=Raw_path;
 data_Properties.Analyzed_path=Analyzed_path;
 
 % Directory for data
-folder_data_save='Results_Training_Stim_noparts_accLuck_43subjects_test';
+folder_data_save='Results_Training_Stim_noparts_accLuck_43subjects';
 cd(Analyzed_path)
 mkdir(folder_data_save)
 
