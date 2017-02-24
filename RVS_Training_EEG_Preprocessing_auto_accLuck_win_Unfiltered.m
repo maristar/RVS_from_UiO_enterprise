@@ -34,7 +34,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject128*');
+listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -46,7 +46,8 @@ clear kk listing_raw
 % Define which subjects to keep in the analysis for FRN here
 % SOS For new data bad_subject_list=[]
 %bad_subject_list=[6,8,18,22,32];
-bad_subject_list=[];
+bad_subject_list=[12, 16,  18, 22, 26, 30]; % for Stim bad pupil
+%bad_subject_list=[];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %good_subj_list=[6,8,18,22,32];
@@ -99,7 +100,10 @@ for mkk=1:length(good_subj_list)
 %         EEG=pop_chanedit(EEG, 'lookup','/Users/mstavrin/Documents/MATLAB/EEGLAB_WORKSHOP_SML/eeglab_sml_v3/eeglab_sml_v3/plugins/dipfit2.3/standard_BESA/standard-10-5-cap385.elp');
 %         
         %% Select which channels to use
-        EEG = pop_select( EEG,'nochannel',{'EXG5' 'EXG6' 'EXG7' 'EXG8'});
+        %EEG = pop_select( EEG,'nochannel',{'EXG5' 'EXG6' 'EXG7' 'EXG8'});
+        % For eyes and comparison with pupilometry 
+        EEG = pop_select( EEG,'channel',{'EXG3' 'EXG4'});
+
 %         ChanNames={'Fz' 'Cz' 'FCz' 'CPz' 'Oz'};
 %         % ChanNames={'FCz'};
 %         EEG = pop_select( EEG,'channel',ChanNames);
@@ -119,13 +123,13 @@ for mkk=1:length(good_subj_list)
         clear input_data;
         eeglab redraw
 
-        extraNameForSet='_Luck_stim_unfilt';
+        extraNameForSet='_Luck_stim_unfilt_EOG';
         Name_Subject_Session=temp22{kk,:};
         temp_epochname=[temp22{kk,:} '_' session_temp '_' num2str(EEG.srate) '_' extraNameForSet ];
         % TODO check if it accepts the temp_epochname below
         trigger='20';
         epoch_from_sec=-0.2;%-0.2;
-        epoch_to_sec=0.8;%0.8;
+        epoch_to_sec=5;%0.8;
         EEG = pop_epoch( EEG, {  trigger }, [epoch_from_sec epoch_to_sec], 'newname', temp_epochname, 'epochinfo', 'yes');
         EEG = eeg_checkset( EEG );
         baseline_from=-200;

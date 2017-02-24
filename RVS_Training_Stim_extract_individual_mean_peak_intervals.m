@@ -13,6 +13,8 @@
 
 % 20 February 2017. 
 % MLS
+
+% Be in the directory of the excel file. 
 excel_filename='List_of_peaks_TrainingStim.xlsx'
 excel_sheet='List_Subjects_full_Training'
 
@@ -22,7 +24,7 @@ xlrange='I4:I45';
 [ peak_P1_tr1 interval_P1_1] = read_excel_peak_values( excel_filename, excel_sheet, xlrange);
 clear xlrange
 
-% P2 Train2
+% P1 Train2
 xlrange='Q4:Q45';
 [ peak_P1_tr2 interval_P1_2] = read_excel_peak_values( excel_filename, excel_sheet, xlrange);
 clear xlrange
@@ -78,21 +80,23 @@ interval_N1=[(interval_N1_1+interval_N1_2)/2];
 % N2 Training 1
 xlrange='L4:L45';
 [ peak_N2_tr1 interval_N2_1 ] = read_excel_peak_values( excel_filename, excel_sheet, xlrange);
-
+clear xlrange
 
 % P3a Train2
 xlrange='T4:T45';
 [ peak_N2_tr2 interval_N2_2 ] = read_excel_peak_values( excel_filename, excel_sheet, xlrange);
+clear xlrange
 
 interval_N2=[(interval_N2_1 +interval_N2_2)/2];
 %% N3
 %  Training 1
 xlrange='N4:N45';
 [ peak_N3_tr1 interval_N3_1] = read_excel_peak_values( excel_filename, excel_sheet, xlrange);
-
+clear xlrange
 
 % P3a Training 2
 xlrange='V4:V45';
 [ peak_N3_tr2 interval_N3_2 ] = read_excel_peak_values( excel_filename, excel_sheet, xlrange);
+clear xlrange
 
 interval_N3=[(interval_N3_1+interval_N3_2)/2];

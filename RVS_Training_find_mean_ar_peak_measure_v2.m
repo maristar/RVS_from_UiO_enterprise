@@ -90,6 +90,34 @@ msec_to_dp=Fs/1000;
             FRN_peak_base=meantempGo(max_P1_index)-FRN_min_peak;
             peakFRN=FRN_peak_base;
             % tested on 19122016 subject101 HR part_a
+             case 'base_peak_general'
+            % TODO general based on Hajzak and the FR¤N calculation before
+            % This gives the difference between the maximum value in
+            % a certain interval and the most negative point between this
+            % maximum and the peak_start_time of the peak we want to measure.  
+            % The mean difference between peaks is found to be 66 ms. The
+            % peak_start_time is 25 ms before the peak so we give to the
+            % program 66+25 = 91 ms before to start looking for the
+            % previous positive peak which will be the maximum value. 
+            start_point_basepeak=peak_start_time-66; % ms after feedback
+            find_starting_basepeak=find(timeVec_msec>start_point_basepeak);
+            start_point_basepeak_index=min(find_starting_basepeak);
+            
+            P1_peak_end_time=peak_start_time;% msec after visual inspection of FZ grandaverage plot HR-LR
+            find_P1_peak_end_time=find(timeVec_msec>P1_peak_end_time);
+            P1_peak_end_time_index=min(find_P1_peak_end_time);
+            
+            % Step 1. Find the max point between 150 ms and 'P1
+            % peak_end_time - 260 msec' (the P1 peak!*)
+            % What is the max amplitude value
+            max_P1_value=max(meantempGo(start_point_basepeak_index:P1_peak_end_time_index));
+            % What is its index
+            max_P1_index=find(meantempGo==max_P1_value);
+                       
+            % Step 2. Find the min between this max and the 'peak_end_time'
+            FRN_min_peak=min(meantempGo(max_P1_index:peak_end_time_index));
+            FRN_peak_base=meantempGo(max_P1_index)-FRN_min_peak;
+            peakFRN=FRN_peak_base;
     end
     final_peak_measure=peakFRN;
 % For unfiltered signals, you can uncomment the following. 

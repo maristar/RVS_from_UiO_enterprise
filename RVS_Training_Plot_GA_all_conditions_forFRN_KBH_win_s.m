@@ -44,8 +44,9 @@ Sessions={'Training1', 'Training2'};
 conditions={'Correct', 'HR','LR','Wrong'};
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[6,8,16,18,22,32];
-good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
+% bad_subject_list=[6,8,16,18,22,32]; % Bad subject list for FFRN
+bad_subject_list=[12, 16, 18, 22, 26, 30]; % Bad for pupil 
+good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end 
 
 
 %% Start load
@@ -54,7 +55,7 @@ for mkk=startfolder:length(good_subj_list)
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
     % Print a message on screen to show on which subject we are working
-    fprintf(' ***  Working on subject %d: %s\n', num2str(mkk), Folder_name)
+    fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     % For every Session: Training1 or Training2 
     for mm=1:length(Sessions)
         session_temp=Sessions{:,mm}; %%% !!!!

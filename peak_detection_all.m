@@ -79,7 +79,7 @@ for cc=1:length(chanlocs)
         temp=header_raw{1, hh}; % 20L
         temp_new=[chanlocs_temp '_' temp];
         header_new{1,1}=header_raw{1,1};
-        header_new{1,hh}=temp_new;
+        header_new{1,hh}=temp_new;  % Subject_Num Oz_Correct Oz_HR Oz_LR Oz_Wrong
     end
     T(1, :)=header_new;
     for mkk=1:(length(good_subj_list))
