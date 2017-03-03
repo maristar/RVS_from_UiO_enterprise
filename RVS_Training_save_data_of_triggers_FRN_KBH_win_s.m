@@ -25,7 +25,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 cd(Raw_Path)
 % Define list of folders 
 clear temp22 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject114*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -40,9 +40,10 @@ Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
 %bad_subject_list=[6,8,13,14,15,16,18,19,22,26,32]; % for Stim oLD
-% bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017  for Stim
-bad_subject_list=[8, 12, 16,  18, 22, 26, 30]; % for Stim bad pupil by Thomas: 12, 16,  18, 22, 26
-%bad_subject_list=[6,8,16,18,22,32]; % for FRN
+bad_subject_list=[];
+%bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017  for Stim
+%bad_subject_list=[8, 12, 16,  18, 22, 26, 30]; % for Stim bad pupil by Thomas: 12, 16,  18, 22, 26
+% bad_subject_list=[6,8,18,22,26,32, 34,37,40]; % for FRN, 25.02.2017
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 
@@ -66,7 +67,7 @@ for mkk=1:length(good_subj_list)
         cd Triggers
         %% Find triggers
         listing_raw=dir('triggers*txt'); % for FRN and pupil data EOG 23-02.2017
-        % listing_raw=dir('stim_*_corr.txt'); % for Stim
+        %listing_raw=dir('stim_*_corr.txt'); % for Stim
         Num_files=length(listing_raw);
         for kkm=1:Num_files
              temp23{kkm,:}=listing_raw(kkm).name;
@@ -82,8 +83,10 @@ for mkk=1:length(good_subj_list)
             if ~isempty(temp_trials)
                 % Load the original EEG set that we need  
                 cd(Analyzed_path_folder)
-                %list_filename=dir('*_256__Luck.set');  % TODO ADD AS ARGUMENT For FRN
+                % list_filename=dir('*_256__Luck.set');  % TODO ADD AS ARGUMENT For FRN
                 list_filename=dir('*_256__Luck_stim_unfilt_EOG.set');  % TODO ADD AS ARGUMENT For Stim
+                %list_filename=dir('*_256__Luck_stim.set');  % TODO ADD AS ARGUMENT For Stim
+
                 Name_to_load=list_filename.name;
                 %[Subject_filename_session '_128_ch_DC_epochs_tr50_auto_5_chan_filt_FRN.set']
                 EEG = pop_loadset('filename', Name_to_load,'filepath',Analyzed_path_folder);

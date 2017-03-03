@@ -19,12 +19,12 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 % Define new directories to save data and figures
 % Directory for data
-folder_data_save='Results_Training_FEEDBACK_4parts_4RL_43subj_24FEB2017';
+folder_data_save='Results_Training_FEEDBACK_4parts_4RL_43subj_01MARCH2017';
 cd(Analyzed_path)
 mkdir(folder_data_save)
 
 %Directory for figures
-folder_figures_save='Figures_Training_FEEDBACK_4parts_4RL_43subj_24FEB2017';
+folder_figures_save='Figures_Training_FEEDBACK_4parts_4RL_43subj_01MARCH2017';
 cd(Analyzed_path)
 mkdir(folder_figures_save)
 
@@ -250,7 +250,7 @@ for mkk=1:(length(good_subj_list))
 end
 cd(Analyzed_path)
 cd(folder_data_save)
-save Peaktobase_results_FRN Peak_results
+save meanpeak_results_FRN Peak_results
 
 
 %% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel

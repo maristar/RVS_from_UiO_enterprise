@@ -35,16 +35,18 @@ fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 Sessions={'Training1', 'Training2'};
 
 %% Define which subjects to keep in the analysis 
-bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017
+bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017 Stim 
+
+%bad_subject_list=[];
 good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
 
 %% Start load
-startfolder=15;
+startfolder=1;
 
 for mkk=startfolder:length(good_subj_list)
     jjk=good_subj_list(mkk);
-    Folder_name=temp22{jjk,:};
-    fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
+    Subject_filename=temp22{jjk,:};
+    fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Subject_filename)
     
     Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
     cd(Raw_path_folder);
@@ -113,9 +115,17 @@ for mkk=startfolder:length(good_subj_list)
             end
         end
         clear a jjj % OK
-
-        Feedback_OnsetDelay_table=T(2:end, indexFeedbackDelay); % 131 for JackLoe, tested first!
-        FeedbackDelay=table2cell(Feedback_OnsetDelay_table);
+        
+         % Correct for 102
+        if strcmp(Subject_filename, 'RVS_Subject102')==1
+            Feedback_OnsetDelay_table=T(3:end, indexFeedbackDelay); 
+            FeedbackDelay=table2cell(Feedback_OnsetDelay_table);
+        elseif strcmp(Subject_filename, 'RVS_Subject102')==0
+            Feedback_OnsetDelay_table=T(2:end, indexFeedbackDelay); 
+            FeedbackDelay=table2cell(Feedback_OnsetDelay_table);
+        end
+        
+       
         % TODO clear Feedback_OnsetDelay_table
         
         %% Find for the Stim.ACC
@@ -127,8 +137,17 @@ for mkk=startfolder:length(good_subj_list)
         end
          clear a jjj 
         
-        StimACC_table=T(2:end, indexStimACC); % 131 for JackLoe, tested first!
-        StimAcc=table2cell(StimACC_table);
+         % Correction for subject 102 which started EEG recording from 2nd
+        % trial number 
+        if strcmp(Subject_filename, 'RVS_Subject102')==1
+            StimACC_table=T(3:end, indexStimACC); % We missed the first trial, first line is
+                % header, so start from entry 3!
+            StimAcc=table2cell(StimACC_table);
+        elseif strcmp(Subject_filename, 'RVS_Subject102')==0
+            StimACC_table=T(2:end, indexStimACC); % 131 for JackLoe, tested first!
+            StimAcc=table2cell(StimACC_table);
+        end
+
         clear indexStimACC
         
         %% Find for the RewardMap
@@ -140,11 +159,15 @@ for mkk=startfolder:length(good_subj_list)
         end
          clear a jjj 
         
-        indexRewMap_table=T(2:end, indexRewMap); % 131 for JackLoe, tested first!
-        RewardMap=table2cell(indexRewMap_table);
-        %clear indexRewMap
+         % Correction for 102 subject
+        if strcmp(Subject_filename, 'RVS_Subject102')==1
+            indexRewMap_table=T(3:end, indexRewMap);
+            RewardMap=table2cell(indexRewMap_table);
+        elseif strcmp(Subject_filename, 'RVS_Subject102')==0
+            indexRewMap_table=T(2:end, indexRewMap);
+            RewardMap=table2cell(indexRewMap_table);
+        end
         
-       
         %% Calculate the total number of triggers we have 
         Num_triggers=size(RewardMap); 
         Num_triggers=Num_triggers(1);
@@ -198,7 +221,15 @@ for mkk=startfolder:length(good_subj_list)
         stim_50L_corr=stim_50L(stim_50L>0);
         stim_20L_corr=stim_20L(stim_20L>0);
   
-
+        % Correction for 114, that has 598 triggers. 
+        % Correction for 102 was addressed above.
+        if strcmp(Subject_filename, 'RVS_Subject114')==1
+            stim_80H_corr=stim_80H_corr(stim_80H_corr<599);
+            stim_50H_corr=stim_50H_corr(stim_50H_corr<599);
+            stim_50L_corr=stim_50L_corr(stim_50L_corr<599);
+            stim_20L_corr=stim_20L_corr(stim_20L_corr<599);
+        end
+        
         %% Make a directory to save all the relevant triggers
         %RAW_path=['/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets' '/RVS_' (Dataset_name) '/' ]
         cd(Analyzed_path_folder) 
@@ -209,7 +240,7 @@ for mkk=startfolder:length(good_subj_list)
         create_triggers_in_txt('stim_50H_corr', stim_50H_corr)
         create_triggers_in_txt('stim_50L_corr', stim_50L_corr)
         create_triggers_in_txt('stim_20L_corr', stim_20L_corr)
-        disp([Folder_name  ' . Triggers created']);
+        disp([Subject_filename  ' . Triggers created']);
         %% TODO compare and remove the NOISY epochs
 
         %% Select the noisy and unite them with wrong_index 
@@ -217,7 +248,18 @@ for mkk=startfolder:length(good_subj_list)
         % Find the txt with 'Subject'
         list_txt=dir('Subject*Stim*txt'); % 31.10.2016 - TODO HERE TO HAVE DONE THE NOISY TRIGGERS and TO NAME THEM Subject101_Training_stim.txt
         Noisy_temp=list_txt.name;
-        Noisy=load(Noisy_temp);
+        
+        % Correction for 102
+        % For the 102 subject that we missed the first trial, to add one
+        % number to the list of noisy triggers we have. 28.02.2017
+        if strcmp(Subject_filename, 'RVS_Subject102')==1
+            Noisy=load(Noisy_temp);
+            Noisy=Noisy+1;
+        elseif strcmp(Subject_filename, 'RVS_Subject102')==0
+            Noisy=load(Noisy_temp);
+        end
+        
+        
         %% End select the Noisy 
 
         cd('Triggers')
@@ -231,6 +273,7 @@ for mkk=startfolder:length(good_subj_list)
 clear T temp_index temp_name temp_triggers 
     end % For sessions 
     clear T
+    
 end % For folders
 
 fclose(fid);
