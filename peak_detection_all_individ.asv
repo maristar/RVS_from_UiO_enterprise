@@ -69,7 +69,7 @@ for mkk=1:(length(good_subj_list)) % For every subject ( in good_subj_list)
                         name_interval=['interval_' name_component '_2'];
                         interval_temp=data_Properties.(name_interval);
                         peak_start_time=interval_temp(jjk, 1);
-                        peak_end_time=interval_temp(jjk,2);
+                        peak_end_time=interval_temp(mkk,2);
                         clear name_interval interval_temp
                     end
                 end % for isempty 
@@ -85,8 +85,6 @@ for mkk=1:(length(good_subj_list)) % For every subject ( in good_subj_list)
        elseif isempty(part_names_all);
            part_name_temp_char='allparts';
            data4channels=Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char);
-           peak_start_time=peak_start_time; % the general
-           peak_end_time=peak_end_time; % the general
            % For all the channels
             for cc=1:length(numchans); 
                 chanlocs_temp=chanlocs(cc).labels;

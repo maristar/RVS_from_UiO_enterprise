@@ -281,6 +281,8 @@ data_Properties.new_post_trigger=new_post_trigger;
 data_Properties.chanlocs=chanlocs;
 data_Properties.Mean_Subjects=Mean_Subjects;
 
+save data_Properties data_Properties
+
 % %Check if we need any of this
 % clear jjk mm kk gg B AreWeRight ...
 %     data_post_trigger ...
@@ -320,19 +322,24 @@ data_Properties.P1_1=interval_P1_1;
 data_Properties.P1_2=interval_P1_2;
 
 data_Properties.P2=interval_P2;
-data_Properties.P2_1=interval_P2_1;
-data_Properties.P2_2=interval_P2_2;
+data_Properties.N1_1=interval_N1_1;
+data_Properties.N1_2=interval_N1_2;
 
-data_Properties.P3a=interval_P3a;
-data_Properties.P3a_1=interval_P3a_1;
-data_Properties.P3a_2=interval_P3a_2;
+data_Properties.N1=interval_N1;
+data_Properties.N1_1=interval_N1_1;
+data_Properties.N1_2=interval_N1_2;
 
-data_Properties.P3b=interval_P3b;
-data_Properties.P3b_1=interval_P3b_1;
-data_Properties.P3b_2=interval_P3b_2;
+data_Properties.N1=interval_N1;
+data_Properties.N1_1=interval_N1_1;
+data_Properties.N1_2=interval_N1_2;
 
-save data_Properties data_Properties
+data_Properties.N1=interval_N1;
+data_Properties.N1_1=interval_N1_1;
+data_Properties.N1_2=interval_N1_2;
 
+data_Properties.N1=interval_N1;
+data_Properties.N1_1=interval_N1_1;
+data_Properties.N1_2=interval_N1_2;
 %% Define time limits for the peak detection 
 name_component='N1';
 type='mean';
