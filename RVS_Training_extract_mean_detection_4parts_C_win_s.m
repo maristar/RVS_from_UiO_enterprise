@@ -19,14 +19,14 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 % Define new directories to save data and figures
 % Directory for data
-folder_data_save='Results_Training_FEEDBACK_4parts_4RL_43subj_21April2017';
+folder_data_save='Results_Training_FEEDBACK_4parts_4RL_43subj_24April2017';
 cd(Analyzed_path)
 mkdir(folder_data_save)
 
-%Directory for figures
-folder_figures_save='Figures_Training_FEEDBACK_4parts_4RL_43subj_21April2017';
-cd(Analyzed_path)
-mkdir(folder_figures_save)
+% %Directory for figures - I am not saving any figures
+% folder_figures_save='Figures_Training_FEEDBACK_4parts_4RL_43subj_24April2017';
+% cd(Analyzed_path)
+% mkdir(folder_figures_save)
 
 %% Define list of Folders - Subjects  
 cd(Raw_path);
@@ -72,7 +72,7 @@ Sessions={'Training1', 'Training2'};
 
 %% Start load
 startfolder=1;
-for mkk=startfolder:3
+for mkk=startfolder:length(good_subj_list)
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
@@ -167,17 +167,20 @@ for mkk=startfolder:3
                     %end
                         data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);
                         nchanGA=size(data, 1);
-                     if nchanGA>5
-                         numchans=[29, 32, 38, 47, 48];
-                         data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
-                         clear data
-                         data=data2;
-                     end
+                       % Commented on 24.04.2017  as now we will run for
+                       % the whole set or for more electrodes to have an
+                       % array for overall ANOVA.
+%                      if nchanGA>5
+%                          numchans=[29, 32, 38, 47, 48];
+%                          data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
+%                          clear data
+%                          data=data2;
+%                      end
                      
                     % Make the mean out of it. 
                     meandata=mean(data, 3);
                     Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char)=meandata;
-                    clear data
+                    clear data meandata nchanGA
                 end % For "if we are right"
               
             end % For gg
