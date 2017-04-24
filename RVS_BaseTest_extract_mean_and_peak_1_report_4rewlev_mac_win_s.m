@@ -5,14 +5,19 @@
 % 19 June 2016 
 % 21 June for double trigger, single report and 4 levels of reward
 % 19.9.2016
+% Revising it for 80_20_20 or 80 conditions 23.3.2017 MLS
+% Revising it for 4 rewlevs, 24.3.2017, MLS
 clear all 
 close all 
 tic
 %% Path information
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+% Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
-cd(Raw_Path)
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
+
+cd(Raw_path)
 % Define list of folders 
 listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
@@ -21,10 +26,18 @@ for kk=1:Num_folders
  
 end
 
+% Where the results will be saved. 
+cd(Analyzed_path)
+saving_data_folder='Mean_All_Subjects_BT_4rewlev_28MARS2017';
+mkdir(saving_data_folder)
+
+% Sessions
 Sessions={'Base', 'Test'};
 
-%%
-% Define the type of triggers we are after
+% Parts or blocks of data
+part_names_all=[];
+
+%% Define the type of triggers we are after
 % Do that by going inside a folder and checking for triggers
 cd(Analyzed_path)
 cd('RVS_Subject104/')
@@ -33,15 +46,60 @@ cd('Base/Triggers')
 % What we put inside the dir function changes with the triggers we want
 % every time. SOS.
 % For 4 reward levels, use: listing_raw=dir('double_one_*0*_corr.txt');
-listing_raw=dir('double_one_*0*_corr.txt');
+ listing_raw=dir('double_one_*0*_corr.txt');
+% listing_raw=dir('double*0_corr.txt')
+% listing_raw=dir('double*0_corr.txt'); % 21.3.2017
 Num_triggers=length(listing_raw);
 for kkm=1:Num_triggers
     temp23{kkm,:}=listing_raw(kkm).name;
 end
 clear kkm listing_raw
+disp(temp23)
+
+
+% List of triggers. 
+for kkk=1:length(temp23); 
+    temp23_new{kkk,:}=temp23{kkk,:}; 
+    trigger_descr_short{kkk,:}=temp23{kkk,:}(8:end-9);
+end
+clear kkk
+disp(trigger_descr_short)
+conditions=trigger_descr_short;
+
+
+%% Define header_raw
+%%Generate header_raw
+% General header based on conditions - it works now! magic maria 23.3.2017
+
+
+header_raw_exp=['Subject_Num_'];
+for ssk=1:length(Sessions) %  Base, Test 
+    session_temp=Sessions(ssk);
+    session_temp_char=char(session_temp);
+    for kk=1:length(conditions) % triggers_descr_short  
+        temp_condition=conditions(kk);
+        temp_condition_char=char(temp_condition);
+        if length(part_names_all)==0
+            middle_temp_name=cellstr([session_temp_char '_' temp_condition_char ]); % for ex. Base_triggertype1 
+            header_raw_exp=[header_raw_exp middle_temp_name ];
+        elseif length(part_names_all)>0
+            for jj=1:length(part_names_all)
+                temp_parts=part_names_all(jj);
+                temp_parts_char=char(temp_parts);
+                middle_temp_name=cellstr([session_temp_char '_'  temp_condition_char '_' temp_parts_char]);
+                header_raw_exp=[header_raw_exp middle_temp_name ];
+            end
+        end
+    end
+end
+clear kk jj
+
+header_raw=header_raw_exp;
+disp(header_raw);
+clear header_raw_exp
 
 %% Define empty structure;
-% Initialize the structure to save the data, named dataGA_BT
+% Initialize the structure to save the data, named Mean_Subjects_BT
 for kk=1:Num_folders
     Folder_name=temp22{kk,:};
     for  yyy=1:length(Sessions) % 4
@@ -50,7 +108,7 @@ for kk=1:Num_folders
         for tt=1:length(temp23) 
             trigger_temp=temp23{tt,:}(1:end-4);
             trigger_temp_char=char(trigger_temp);
-            Mean_Subjects_BT_4rewlev.(Folder_name).(session_temp_char).(trigger_temp_char)=[];
+            Mean_Subjects_BT.(Folder_name).(session_temp_char).(trigger_temp_char)=[];
         end % For trigger temp%dataGA_BT.(session_temp_char).(trigger_temp_char)=[];
     end
 end
@@ -60,7 +118,8 @@ temp_session session_temp_char trigger_temp trigger_temp_char
 
 %% Start the mega loop for analysis 
 % Define which subjects are good and which are bad. 
-bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30];
+%bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30];
+bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30, 34, 36, 40]; % updated 21.3.2017  209 should be inside as it has nothing 80_20_20
 % Old correct_folders=[startfolder 2:6 8:12 14 15 18 21:29 31:33];
 good_subj_list=[]; 
 for kk=1:Num_folders, 
@@ -79,7 +138,7 @@ for mkk=1:length(good_subj_list)
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     % To be deleted
 %     Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\'];
-%     Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
+%     Raw_path_folder=[Raw_path temp22{jjk,:} '\'];
 %     cd(Raw_path_folder);
     % For every Session: Training1 or Training2 
     for mm=1:length(Sessions)
@@ -89,7 +148,7 @@ for mkk=1:length(good_subj_list)
         
         % Define the new paths            
         Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\' session_temp ];
-        Raw_path_folder=[Raw_Path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp];
+        Raw_path_folder=[Raw_path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp];
         
         % Loop for every trigger type we are going to use
          for kk=1:Num_triggers 
@@ -155,12 +214,16 @@ for mkk=1:length(good_subj_list)
                     end
                           
                     % Save the EEG.data with smaller epoch
-                    data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);  %TODO
+                    data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :); 
                     meandata=mean(data, 3);
-                    Mean_Subjects_BT_4rewlev.(Folder_name).(session_temp_char).(trigger_temp_char)=meandata;
+                    Mean_Subjects_BT.(Folder_name).(session_temp_char).(trigger_temp_char)=meandata;
+                    Num_triggers_BT.(Folder_name).(session_temp_char).(trigger_temp_char)=size(data, 3); % new March 2017
                     %dataGA_BT.(session_temp_char).(trigger_temp_char)=cat(3, dataGA_BT.(session_temp_char).(trigger_temp_char), data);
-                     clear data
+                     clear data meandata 
                 end % End if we are Right
+            elseif length(load_trig)==0 % what to do when trigger is empty. 
+                Mean_Subjects_BT.(Folder_name).(session_temp_char).(trigger_temp_char)=0;
+                Num_triggers_BT.(Folder_name).(session_temp_char).(trigger_temp_char)=0; % new March 2017
             end % if there is trigger
          end % Num_triggers
     end % Sessions
@@ -181,28 +244,52 @@ clear jjk mm kk gg B ...
     temp_condition ...
     temp_condition_char
 
-
+%% Depending on case name the variable and save it in the desired folder
 cd(Analyzed_path)
-mkdir('Mean_All_Subjects_4rewlev')
-cd('Mean_All_Subjects_4rewlev')
-save Mean_Subjects_BT_4rewlev Mean_Subjects_BT_4rewlev
+cd(saving_data_folder)
+% Rename according to description of analysis % TODO to automate
+Mean_Subjects_BT_80_20=Mean_Subjects_BT;
+Num_triggers_BT_80_20=Num_triggers_BT;
+
+save Mean_Subjects_BT_80_20 Mean_Subjects_BT_80_20
+save Num_triggers_BT_80_20 Num_triggers_BT_80_20
 save new_post_trigger_index new_post_trigger_index
 save new_pre_trigger_index new_pre_trigger_index
 save timeVec_msec timeVec_msec
 toc
 % 
 %% Define Electrodes to work on. 20.9.16
-selected_channels=[6, 7, 9, 10, 11, 12, 14, 16, 17, 20, 23, 25, 28, 29];
+% selected_channels=[6, 7, 9, 10, 11, 12, 14, 16, 17, 20, 23, 25, 28, 29];
+% March 2017 * we have all the electrodes now * 66
 % P3, P5, PO3, O1, OZ, POZ, CPZ, AFZ, FZ, FCZ, C6, P4, PO4, O2
+selected_channels=[21 22 26 27 29 30 32 37 38 47 51 58 63 64];
+% Now the structure has all the electrodes, so these electrodes have other
+% numbers
+% P3= 21
+% P5 = 22
+% PO3= 26
+% O1=27
+% OZ=29
+% POZ=30
+% CPZ=32
+% AFZ=37
+% FZ=38
+% FCZ=47
+% C6=51
+% P4=58
+% PO4=63
+% O2=64
+
 %% Search for the N1 a negative-going deflection between 150-200 msec. 
 % Define time limits for the peak detection 
+name_component = 'N1';
 type='mean';
 peak_start_time=140;
 peak_end_time=210;
-time_epoch_start=-200;
-time_epoch_end=60; % TODO to use the new_pre_trigger and new_post_trigger
+time_epoch_start=new_pre_trigger; %-200;
+time_epoch_end=new_post_trigger; % 600; % 
 startfolder=1;
-name_component = 'N1';
+
 for jjk=[good_subj_list]  % For every subject - folder
    Folder_name=temp22{jjk,:};
    Folder_name_char=char(Folder_name);
@@ -212,7 +299,7 @@ for jjk=[good_subj_list]  % For every subject - folder
        for kk=1:length(temp23)
            trigger_temp=temp23{kk,:}(1:end-4);
             trigger_temp_char=char(trigger_temp);                
-            dataAllchannels=Mean_Subjects_BT_4rewlev.(Folder_name).(session_temp_char).(trigger_temp_char);
+            dataAllchannels=Mean_Subjects_BT.(Folder_name).(session_temp_char).(trigger_temp_char);
             if length(dataAllchannels)>0
                 for cc=[selected_channels];
                     chanlocs_temp=chanlocs(cc).labels;
@@ -232,14 +319,14 @@ for jjk=[good_subj_list]  % For every subject - folder
    end % For all sessions
 end % For all subjects 
 cd(Analyzed_path)
-cd ('Mean_All_Subjects_4rewlev')
+cd(saving_data_folder)
 save Peak_results_N1 Peak_results
 
-%% Write components to a txt file - NEW
-header_raw={'Subject_Num','_Base_20L','_Base_50L','_Base_50H','_Base_80H','_Test_20L','_Test_50L','_Test_50H','_Test_80H'};
+% Write components to a txt file - NEW
+% header_raw={'Subject_Num','_Base_20L','_Base_50L','_Base_50H','_Base_80H','_Test_20L','_Test_50L','_Test_50H','_Test_80H'};
 
 write_peak_component_to_txt_1_report_4rewlev( header_raw, startfolder, good_subj_list , temp22, ...
-    selected_channels, Sessions, Peak_results, chanlocs, name_component, temp23, type)
+    selected_channels, Sessions, Peak_results, chanlocs, name_component, temp23, type, Analyzed_path,saving_data_folder )
 clear Peak_results
 
 
@@ -247,8 +334,8 @@ clear Peak_results
 % Define time limits for the peak detection 
 name_component = 'P300'
 type='mean';
-peak_start_time=200;
-peak_end_time=500;
+peak_start_time=340;
+peak_end_time=450;
 time_start=-200 %
 startfolder=1;
 for jjk=[good_subj_list]  % For every subject - folder
@@ -260,7 +347,7 @@ for jjk=[good_subj_list]  % For every subject - folder
        for kk=1:length(temp23)
            trigger_temp=temp23{kk,:}(1:end-4);
             trigger_temp_char=char(trigger_temp);                
-            dataAllchannels=Mean_Subjects_BT_4rewlev.(Folder_name).(session_temp_char).(trigger_temp_char);
+            dataAllchannels=Mean_Subjects_BT.(Folder_name).(session_temp_char).(trigger_temp_char);
             if length(dataAllchannels)>0
                 for cc=[selected_channels];
                     chanlocs_temp=chanlocs(cc).labels;
@@ -279,23 +366,24 @@ for jjk=[good_subj_list]  % For every subject - folder
    end % For all sessions
 end % For all subjects 
 cd(Analyzed_path)
-cd ('Mean_All_Subjects_4rewlev')
-mkdir('P300_from200ms')
-cd('P300_from200ms')
+cd(saving_data_folder)
+mkdir('P300_from340ms')
+cd('P300_from340ms')
 save Peak_results_P300 Peak_results
 
-%% Write components to a txt file - NEW
+% Write components to a txt file - NEW
 %header_raw={'Subject_Num','_Base_20L','_Base_50H','_Base_50L','_Base_80H','_Test_20L','_Test_50H','_Test_50L','_Test_80H'};
 
 write_peak_component_to_txt_1_report_4rewlev( header_raw, startfolder, good_subj_list , temp22, ...
-    selected_channels, Sessions, Peak_results, chanlocs, name_component , temp23, type)
+    selected_channels, Sessions, Peak_results, chanlocs, name_component , temp23, type, Analyzed_path, saving_data_folder)
 clear Peak_results 
+
 %% N2 detection 
 % Define time limits for the peak detection 
 name_component ='N2';
 type='mean';
-peak_start_time=270;
-peak_end_time=300;
+peak_start_time=270; % in msec
+peak_end_time=320; % in msec
 startfolder=1;
 for jjk=[good_subj_list];  % For every subject - folder
    Folder_name=temp22{jjk,:};
@@ -306,7 +394,7 @@ for jjk=[good_subj_list];  % For every subject - folder
        for kk=1:length(temp23);
            trigger_temp=temp23{kk,:}(1:end-4);
             trigger_temp_char=char(trigger_temp);                
-            dataAllchannels=Mean_Subjects_BT_4rewlev.(Folder_name).(session_temp_char).(trigger_temp_char);
+            dataAllchannels=Mean_Subjects_BT.(Folder_name_char).(session_temp_char).(trigger_temp_char); % to clear dataAllchannels
             if length(dataAllchannels)>0
                 for cc=[selected_channels];
                     chanlocs_temp=chanlocs(cc).labels;
@@ -317,19 +405,23 @@ for jjk=[good_subj_list];  % For every subject - folder
                     Peak_results.(Folder_name).(session_temp_char).(trigger_temp_char).(chanlocs_temp_char)=final_peak_measure;
                 clear temp_chan chanlocs_temp
             end % For channels
-            else % what to do if there is no data
+            else % what to do if there is no data - for ex. subject 209, base, 80_20_20 is empty 
            Peak_results.(Folder_name).(session_temp_char).(trigger_temp_char).(chanlocs_temp_char)=[];
        end % if data not empty
        end % For all trigger types 
    end % For all sessions
 end % For all subjects 
+clear mm kk cc jjk
 cd(Analyzed_path)
-cd ('Mean_All_Subjects_4rewlev')
+cd(saving_data_folder)
 save Peak_results_N2 Peak_results
 
-%% Write components to a txt file - NEW
+% Write components to a txt file 
 write_peak_component_to_txt_1_report_4rewlev( header_raw, startfolder, good_subj_list , temp22, ...
-    selected_channels, Sessions, Peak_results, chanlocs, name_component, temp23, type)
+    selected_channels, Sessions, Peak_results, chanlocs, name_component, temp23, type, Analyzed_path, saving_data_folder)
+clear peak_start_time peak_end_time name_component
+clear Peak_results 
+
 
 %% P2 detection 
 % Define time limits for the peak detection 
@@ -347,7 +439,7 @@ for jjk=[good_subj_list]; % For every subject - folder
        for kk=1:length(temp23);
            trigger_temp=temp23{kk,:}(1:end-4);
             trigger_temp_char=char(trigger_temp);                
-            dataAllchannels=Mean_Subjects_BT_4rewlev.(Folder_name).(session_temp_char).(trigger_temp_char);
+            dataAllchannels=Mean_Subjects_BT.(Folder_name).(session_temp_char).(trigger_temp_char);
             if length(dataAllchannels)>0
                 for cc=[selected_channels];
                     chanlocs_temp=chanlocs(cc).labels;
@@ -364,113 +456,19 @@ for jjk=[good_subj_list]; % For every subject - folder
        end % For all trigger types 
    end % For all sessions
 end % For all subjects 
+clear mm kk cc jjk
+
 cd(Analyzed_path)
-cd ('Mean_All_Subjects_4rewlev')
+cd(saving_data_folder)
 save Peak_results_P2 Peak_results
 
-%% Write components to a txt and an excel file - NEW
+% Write components to a txt and an excel file 
 
 write_peak_component_to_txt_1_report_4rewlev( header_raw, startfolder, good_subj_list , temp22, ...
-    selected_channels, Sessions, Peak_results, chanlocs, name_component, temp23, type )
+    selected_channels, Sessions, Peak_results, chanlocs, name_component, temp23, type, Analyzed_path, saving_data_folder )
+clear peak_start_time peak_end_time name_component
+clear Peak_results 
 
-% %% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
-% % Header sent by Thomas
-% %header={'Subject_Num','CPz_Correct_a','CPz_Correct_b', 'CPz_Correct_c',	'CPz_Correct_d', 'CPz_Incorrect_a',	'CPz_Incorrect_b',	'CPz_Incorrect_c',	'CPz_Incorrect_d','CPz_HR_a', 'CPz_HR_b','CPz_HR_c','CPz_HR_d',	'CPz_LR_a',	'CPz_LR_b',	'CPz_LR_c',	'CPz_LR_d'};
-% header_raw={'Subject_Num','_Base_double_report','_Test_double_report'};
-% startfolder=1;
-% good_subj_list =[startfolder 2:6 8 10:12 14 15 18 21:23 25:29 31:33];
-% selected_channels=[14, 18, 15, 6, 23, 10, 8, 25, 9];
-% for cc=[selected_channels]
-%     chanlocs_temp=chanlocs(cc).labels;   
-%     chanlocs_temp_char=char(chanlocs_temp);   
-%     %% Make new header
-%     for hh=2:length(header_raw);
-%         temp=header_raw{1, hh};
-%         temp_new=[chanlocs_temp temp];
-%         header_new{1,1}=header_raw{1,1};
-%         header_new{1,hh}=temp_new;
-%     end
-%     T(1, :)=header_new;
-%     
-%     for jjk=[good_subj_list ]
-%      % For every subject - folder
-%         Folder_name=temp22{jjk,:};
-%         T(jjk+1,1)={Folder_name(5:end)};
-%         column_counter=0;
-%         for kk=1:length(Sessions) % For every condition : Correct,Wrong, HR, LR
-%             session_temp=Sessions(kk);
-%             session_temp_char=char(session_temp); 
-%             column_counter=column_counter+1;
-%             trigger_temp='double_both_corr';
-%             trigger_temp_char=char(trigger_temp);
-%                temp_peak_results=Peak_results.(Folder_name).(session_temp_char).(trigger_temp_char).(chanlocs_temp);
-%                T(jjk+1,1+column_counter)=num2cell(temp_peak_results);
-%         end % End for sessions 
-%     end % End for every subject
-%     %% Save the cell into a table and then export to txt, which can be imported in 
-%     % excel as a comma delimiter
-%     Tnew=cell2table(T, 'VariableNames', header_new);
-%     filename_to_save=[chanlocs_temp 'P2_results.txt'];
-%     writetable(Tnew, filename_to_save);
-% end % End for chanlocs
-% 
-% 
-% %% %% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
-% % Header sent by Thomas
-% %header={'Subject_Num','CPz_Correct_a','CPz_Correct_b', 'CPz_Correct_c',	'CPz_Correct_d', 'CPz_Incorrect_a',	'CPz_Incorrect_b',	'CPz_Incorrect_c',	'CPz_Incorrect_d','CPz_HR_a', 'CPz_HR_b','CPz_HR_c','CPz_HR_d',	'CPz_LR_a',	'CPz_LR_b',	'CPz_LR_c',	'CPz_LR_d'};
-% header_raw={'Subject_Num','_Base_double_report_P2','_Test_double_report_P2'};
-% startfolder=1;
-% good_subj_list =[startfolder 2:6 8 10:12 14 15 18 21:23 25:29 31:33];
-% selected_channels=[14, 18, 15, 6, 23, 10, 8, 25, 9];
-% for cc=[selected_channels]
-%     chanlocs_temp=chanlocs(cc).labels;   
-%     chanlocs_temp_char=char(chanlocs_temp);   
-%     %% Make new header
-%     for hh=2:length(header_raw);
-%         temp=header_raw{1, hh};
-%         temp_new=[chanlocs_temp temp];
-%         header_new{1,1}=header_raw{1,1};
-%         header_new{1,hh}=temp_new;
-%     end
-%     T(1, :)=header_new;
-%     
-%     for jjk=[good_subj_list ]
-%      % For every subject - folder
-%         Folder_name=temp22{jjk,:};
-%         T(jjk+1,1)={Folder_name(5:end)};
-%         column_counter=0;
-%         for kk=1:length(Sessions) % For every condition : Correct,Wrong, HR, LR
-%             session_temp=Sessions(kk);
-%             session_temp_char=char(session_temp); 
-%             column_counter=column_counter+1;
-%             trigger_temp='double_both_corr';
-%             trigger_temp_char=char(trigger_temp);
-%                temp_peak_results=Peak_results.(Folder_name).(session_temp_char).(trigger_temp_char).(chanlocs_temp);
-%                T(jjk+1,1+column_counter)=num2cell(temp_peak_results);
-%         end % End for sessions 
-%     end % End for every subject
-%     %% Save the cell into a table and then export to txt, which can be imported in 
-%     % excel as a comma delimiter
-%     Tnew=cell2table(T, 'VariableNames', header_new);
-%     filename_to_save=[chanlocs_temp '_P2_results.txt'];
-%     writetable(Tnew, filename_to_save);
-% end % End for chanlocs
+%% The End
 
-% % New way of doing this 
-% %% N2
-% %% N2 detection 
-% % Define time limits for the peak detection 
-% type='min';
-% peak_start_time=270;
-% peak_end_time=300;
-% time_start=-200;
-% type='min';
-% selected_channels=[14, 18, 15, 6, 23, 10, 8, 25, 9];
-% startfolder=1;
-% correct_folders=[startfolder 2:6 8 10:12 14 15 18 21:23 25:29 31:33];
-% trigger_temp='double_both_corr';
-% name_component='N2'
-% 
-% [ Peak_results, Tnew ] = RVS_BaseTest_peak_component_measure(peak_start_time, peak_end_time, ...
-%     time_start, type, selected_channels, startfolder, correct_folders, temp22, Sessions, trigger_temp, name_component )
 toc

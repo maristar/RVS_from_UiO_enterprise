@@ -8,12 +8,11 @@
 clear all 
 close all 
 tic
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 %% Define list of folders 
-cd(Raw_Path)
+cd(Raw_path)
 listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
@@ -24,8 +23,8 @@ end
 Sessions={'Base', 'Test'};
 
 %% Start the new part 
-% Define which subjects to keep in the analysis for FRN here
-bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 26, 30];
+% Define which subjects are good and which are bad. 
+bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30, 34, 36]; % updated 21.3.2017
 good_subj_list=[]; 
 for ssf=1:Num_folders, 
     if ~ismember(ssf, bad_subject_list), 
@@ -37,7 +36,7 @@ clear ssf
 % Define sessions
 Sessions={'Base', 'Test'};
 %% Start load
-for mkk=1:length(good_subj_list)
+for mkk=25:length(good_subj_list)
     kk=good_subj_list(mkk);
     Folder_name=temp22{kk,:};
     % Declare on which subject we are working 
@@ -47,12 +46,12 @@ for mkk=1:length(good_subj_list)
     % Work for each session independently 
     for jj=1:length(Sessions)
         session_temp=Sessions{jj};
-        cd(Raw_Path);
+        cd(Raw_path);
         cd(temp22{kk,:});
         cd(temp22{kk,:});
         % Define path with folder name 
         Analyzed_path_folder=[Analyzed_path temp22{kk,:} '\'  session_temp '\'];
-        Raw_path_folder=[Raw_Path temp22{kk,:} '\' temp22{kk,:} '\' session_temp '\'];
+        Raw_path_folder=[Raw_path temp22{kk,:} '\' temp22{kk,:} '\' session_temp '\'];
         
         % Go to Raw_path_folder
         cd(Raw_path_folder);
@@ -68,8 +67,8 @@ for mkk=1:length(good_subj_list)
             Edat2file=listing_raw2(1).name;
             Filename_matlab=Edat2file;
 
-            %     [FileName, Raw_Path] = uigetfile('*.*','Select the MATLAB T table (Tfinal) file "txt", or "mat" ');
-            %     cd(Raw_Path)
+            %     [FileName, Raw_path] = uigetfile('*.*','Select the MATLAB T table (Tfinal) file "txt", or "mat" ');
+            %     cd(Raw_path)
             T = readtable((Filename_matlab), ...
             'Delimiter','\t','ReadVariableNames',false);
             clear Filename_matlab

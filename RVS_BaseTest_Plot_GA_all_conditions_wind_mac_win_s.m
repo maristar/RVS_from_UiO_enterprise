@@ -1,17 +1,18 @@
-%% To do the grandaverage plots for the RVS_Training
-% Maria Stavrinou
+%% Program to do the grandaverage plots for the RVS_Training
+% Maria Stavrinou. 
 
 % 19 June, based on the RVS_Training_Plot_GA_all_conditions/.m *and #_4_parts_B.m
 %Made the 4 reward levels and the plots showing 80-20 in
 %FiguresGA_BT_4rewlevels
 % 20 September 2016. 
+% 29.03.2017
 clear all 
 close all
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 
-cd(Raw_Path)
+cd(Raw_path)
 % Define list of folders 
 listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
@@ -41,10 +42,10 @@ cd('Base/Triggers')
 % results,figures,variables,etc. 
 
 %TODO change 1
-trigger_type='80_20_8020';
+trigger_type='double_none_corr';
 % TODO change 2
 % Write what the dir type can write to find out the triggers
-listing_raw=dir('double_80_20_*0_corr.txt');
+listing_raw=dir('double_none_corr.txt');
 Num_triggers=length(listing_raw);
 for kkm=1:Num_triggers
     temp23{kkm,:}=listing_raw(kkm).name;
@@ -55,7 +56,7 @@ clear kkm
 cd(Analyzed_path)
 % TODO change the folder name to be created
 % Name for the folder to save the results. 
-New_saving_path_results=['FiguresGA_BT_all' trigger_type];
+New_saving_path_results=['FiguresGA_BT_all' trigger_type date];
 mkdir(New_saving_path_results)
 
 % Savename for the matlab variable with the grandaverage.
@@ -84,7 +85,9 @@ clear yyy nnn temp_session temp_session_char trigger_temp trigger_temp_char
 
 %%
 % Define which subjects are good and which are bad. 
-bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 26, 30];
+%bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 26, 30]; old for 33
+%subjects only 
+bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30, 34, 36, 40]; % updated 21.3.2017  209 should be inside as it has nothing 80_20_20
 % Old correct_folders=[startfolder 2:6 8:12 14 15 18 21:29 31:33];
 good_subj_list=[]; 
 for kk=1:Num_folders, 
@@ -101,7 +104,7 @@ for mkk=1:length(good_subj_list)
     Folder_name=temp22{jjk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\'];
-    Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
+    Raw_path_folder=[Raw_path temp22{jjk,:} '\'];
     cd(Raw_path_folder);
     for mm=1:length(Sessions)
         session_temp=Sessions{:,mm}; %%% !!!!
@@ -110,7 +113,7 @@ for mkk=1:length(good_subj_list)
         
         % Define the new paths            
         Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\' session_temp ];
-        Raw_path_folder=[Raw_Path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp];
+        Raw_path_folder=[Raw_path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp];
         
         % Loop for every trigger type we are going to use
         for kk=1:Num_triggers % For every condition : Wrong, Correct,HR, LR
@@ -143,7 +146,7 @@ for mkk=1:length(good_subj_list)
 
                         % Get the data and the dimensions of it. 
                         % Select smaller timepoints, run only once, at start!
-                        if (jjk==1 & mm==1 && kk==1)
+                        if (jjk==startfolder & mm==1 && kk==1)
                         Fs=EEG.srate;
                         pre_trigger = EEG.xmin*1000; %msec  EEGLAB has the minus infront, 12.09.2016
                         post_trigger = EEG.xmax*1000; %msec 
@@ -226,44 +229,91 @@ save chanlocs chanlocs
 
 %% Ploting area %TODO to make it as functions
 
-% %% Plot double report from the double condition
-% for cc=[6, 7, 9, 10, 11, 12, 14, 16, 17, 20, 23, 25, 28, 29]% 1:length(chanlocs)   
-%      %for kkm=1:length(Sessions)
-%         fig=figure; %(cc+length(chanlocs)); 
-%         %set(gca,'colororder',[0 0 1;0 0 1;0 0 1; 1 0 0;1 0 0;1 0 0],'nextplot','add'); % green 010
-%         set(gca,'colororder',[0 0 1; 1 0 0],'nextplot','add'); % green 010
-%         set(gca,'fontsize', 16);
-%          %session_temp=Sessions{:, kkm};
-%          %session_temp_char=char(session_temp);
-%         temp_data_to_plot_Base_double=dataGA_BT.Base.double_both_corr_GA(cc,:);
-%         %temp_data_to_plot_Base_one=dataGA_BT.Base.double_one_corr_GA(cc,:);
-%         %temp_data_to_plot_Base_none=dataGA_BT.Base.double_none_corr_GA(cc,:);
-%         
-%         temp_data_to_plot_Test_double=dataGA_BT.Test.double_both_corr_GA(cc,:);
-%         %temp_data_to_plot_Test_one=dataGA_BT.Test.double_one_corr_GA(cc,:);
-%         %temp_data_to_plot_Test_none=dataGA_BT.Test.double_none_corr_GA(cc,:);
-%         
-%         plot(timeVec_msec, temp_data_to_plot_Base_double, 'Linewidth', 2); hold on; 
-% %         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_one, 'Linewidth', 2,'LineStyle', '--'); hold on; 
-% %         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_none, 'Linewidth', 2,'LineStyle', '-.'); hold on; 
-%         plot(timeVec_msec, temp_data_to_plot_Test_double, 'Linewidth', 2, 'LineStyle', '--'); 
-%         
-% %         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_one, 'Linewidth', 2,'LineStyle', '--');  
-% %         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_none, 'Linewidth', 2,'LineStyle', '-.');  
-%         legend('double report Base', 'double report Test', 'Location', 'best');
-%         %legend('double report Base', 'one Base', 'none Base', 'double report Test', 'one Test', 'none Test');
-%         title_text=[chanlocs(cc).labels ' Base vs Test' ]
-%         title(title_text);
-%         axis('tight');
-%         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-% %         text(0,max(temp_data_to_plot_Base_a), 'Stim');
-%         temp_save_name_fig=[chanlocs(cc).labels 'double_rep_BT_GA' ];
-%         saveas(fig, temp_save_name_fig, 'png');
-%         saveas(fig, temp_save_name_fig, 'fig');
-%         clear temp_save_name
-% end
+%% Plot double report - or one-corrct from the double condition
+selected_channels=[21, 22, 26, 27, 29, 30, 32, 37, 38, 47, 51, 58, 59, 63, 64]; % for B-T
+for cc=[selected_channels]% 1:length(chanlocs)  
+    
+     %for kkm=1:length(Sessions)
+        fig=figure; %(cc+length(chanlocs)); 
+        %set(gca,'colororder',[0 0 1;0 0 1;0 0 1; 1 0 0;1 0 0;1 0 0],'nextplot','add'); % green 010
+        set(gca,'colororder',[0 0 1; 1 0 0],'nextplot','add'); % green 010
+        set(gca,'fontsize', 16);
+         %session_temp=Sessions{:, kkm};
+         %session_temp_char=char(session_temp);
+        temp_data_to_plot_Base_double=dataGA_BT.Base.double_none_corr_GA(cc,:);
+        %temp_data_to_plot_Base_one=dataGA_BT.Base.double_one_corr_GA(cc,:);
+        %temp_data_to_plot_Base_none=dataGA_BT.Base.double_none_corr_GA(cc,:);
+        
+        temp_data_to_plot_Test_double=dataGA_BT.Test.double_none_corr_GA(cc,:);
+        %temp_data_to_plot_Test_one=dataGA_BT.Test.double_one_corr_GA(cc,:);
+        %temp_data_to_plot_Test_none=dataGA_BT.Test.double_none_corr_GA(cc,:);
+        
+        plot(timeVec_msec, temp_data_to_plot_Base_double, 'Linewidth', 2); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_one, 'Linewidth', 2,'LineStyle', '--'); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_none, 'Linewidth', 2,'LineStyle', '-.'); hold on; 
+        plot(timeVec_msec, temp_data_to_plot_Test_double, 'Linewidth', 2, 'LineStyle', '--'); 
+        
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_one, 'Linewidth', 2,'LineStyle', '--');  
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_none, 'Linewidth', 2,'LineStyle', '-.');  
+        legend('double none correct Base', 'double none correct Test', 'Location', 'best');
+        %legend('double report Base', 'one Base', 'none Base', 'double report Test', 'one Test', 'none Test');
+        title_text=[chanlocs(cc).labels ' Base vs Test' ]
+        title(title_text);
+        axis('tight');
+        SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+%         text(0,max(temp_data_to_plot_Base_a), 'Stim');
+        temp_save_name_fig=[chanlocs(cc).labels 'double_none_correct_BT_GA' ];
+        saveas(fig, temp_save_name_fig, 'png');
+        saveas(fig, temp_save_name_fig, 'fig');
+        clear temp_save_name
+    
+end
 
 
+%% Base-test double report, butterfly plot **new sweet march 17**
+selected_channels=[21, 22, 26, 27, 29, 30, 32, 37, 38, 47, 51, 58, 59, 63, 64]; % for B-T
+% Start one figure only
+fig=figure; %(cc+length(chanlocs)); 
+set(gca,'fontsize', 16);
+for cc=1:64%[selected_channels]% 1:length(chanlocs)  
+    if cc~=55
+     %for kkm=1:length(Sessions)     
+        set(gca,'colororder',[0 0 1;1 0 0],'nextplot','add'); % green 010
+         %session_temp=Sessions{:, kkm};
+         %session_temp_char=char(session_temp);
+        temp_data_to_plot_Base_double=dataGA_BT.Base.double_none_corr_GA(cc,:);
+        %temp_data_to_plot_Base_one=dataGA_BT.Base.double_one_corr_GA(cc,:);
+        %temp_data_to_plot_Base_none=dataGA_BT.Base.double_none_corr_GA(cc,:);
+        
+        temp_data_to_plot_Test_double=dataGA_BT.Test.double_none_corr_GA(cc,:);
+        %temp_data_to_plot_Test_one=dataGA_BT.Test.double_one_corr_GA(cc,:);
+        %temp_data_to_plot_Test_none=dataGA_BT.Test.double_none_corr_GA(cc,:);
+        
+        plot(timeVec_msec, temp_data_to_plot_Base_double, 'Linewidth', 2); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_one, 'Linewidth', 2,'LineStyle', '--'); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_none, 'Linewidth', 2,'LineStyle', '-.'); hold on; 
+        plot(timeVec_msec, temp_data_to_plot_Test_double, 'Linewidth', 2, 'LineStyle', '--'); hold on;
+        
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_one, 'Linewidth', 2,'LineStyle', '--');  
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_none, 'Linewidth', 2,'LineStyle', '-.');  
+
+        %legend('double report Base', 'one Base', 'none Base', 'double report Test', 'one Test', 'none Test');
+        axis('tight');
+    
+%         text(0,max(temp_data_to_plot_Base_a), 'Stim');
+    end
+end
+
+legend('double none correct Base', 'double none correct Test', 'Location', 'best');
+title_text=[' Base vs Test no report GA' ]
+title(title_text);
+
+SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+temp_save_name_fig=['Double_no_report_butterfly_BT_GA_64_channels' ];
+saveas(fig, temp_save_name_fig, 'png');
+saveas(fig, temp_save_name_fig, 'fig');
+
+clear temp_save_name
 % 
 % % Plot double - one -one report from the doubl condition
 % for cc=[5, 6, 8, 9, 10, 12, 14, 15, 18, 19, 22, 23, 25]% 1:length(chanlocs)   
@@ -301,34 +351,37 @@ save chanlocs chanlocs
 %         clear temp_save_name
 % end
 
-% Plot double dondition, single report base/test 4 reward levels
-% for cc=[6, 7, 9, 10, 11, 12, 14, 16, 17, 20, 23, 25, 28, 29]% 1:length(chanlocs)   
+% %Plot double dondition, single report base/test 4 reward levels
+% selected_channels=[21 22 26 27 29 30 32 37 38 47 51 58 63 64];
+% dataGA_BT_4rewlev=dataGA_BT;
+% for cc=[21 22 26 27 29 30 32 37 38 47 51 58 63 64];% 1:length(chanlocs)   
 %      for kkm=1:length(Sessions)
 %         fig=figure; %(cc+length(chanlocs)); 
-%         set(gca,'colororder',[0 0 1;0 0 1;1 0 0; 1 0 0],'nextplot','add'); % green 010
+%         set(gca,'colororder',[0 0 1;1 0 0;0 0 1; 1 0 0],'nextplot','add'); % green 010
 %         set(gca,'fontsize', 16);
 %          session_temp=Sessions{:, kkm};
 %          session_temp_char=char(session_temp);
-%         temp_data_to_plot_Base_double_one_80H=dataGA_BT_4rewlev.Base.double_one_80H_corr_4rewlevGA(cc,:);
-%         temp_data_to_plot_Base_double_one_20L=dataGA_BT_4rewlev.Base.double_one_20L_corr_4rewlevGA(cc,:);
-%         temp_data_to_plot_Test_double_one_80H=dataGA_BT_4rewlev.Test.double_one_80H_corr_4rewlevGA(cc,:);
-%         temp_data_to_plot_Test_double_one_20L=dataGA_BT_4rewlev.Test.double_one_20L_corr_4rewlevGA(cc,:);
+%         temp_data_to_plot_Base_double_one_80H=dataGA_BT_4rewlev.Base.double_one_80H_corr_GA(cc,:);
+%         temp_data_to_plot_Base_double_one_20L=dataGA_BT_4rewlev.Base.double_one_20L_corr_GA(cc,:);
+%         temp_data_to_plot_Test_double_one_80H=dataGA_BT_4rewlev.Test.double_one_80H_corr_GA(cc,:);
+%         temp_data_to_plot_Test_double_one_20L=dataGA_BT_4rewlev.Test.double_one_20L_corr_GA(cc,:);
 %         
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_double_one_80H, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Base_double_one_20L, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_double_one_80H, 'Linewidth', 2); hold on; 
-%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_Test_double_one_20L, 'Linewidth', 2, 'LineStyle', '--'); 
+%         plot(timeVec_msec, temp_data_to_plot_Base_double_one_80H, 'Linewidth', 2); hold on; 
+%         plot(timeVec_msec, temp_data_to_plot_Base_double_one_20L, 'Linewidth', 2, 'LineStyle', '--'); hold on; 
+%         plot(timeVec_msec, temp_data_to_plot_Test_double_one_80H, 'Linewidth', 2); hold on; 
+%         plot(timeVec_msec, temp_data_to_plot_Test_double_one_20L, 'Linewidth', 2, 'LineStyle', '--'); 
 % 
 %         legend('80H Base','20L Base','80H Test', '20L Test', 'Location', 'Southeast');
 %         title_text=[chanlocs(cc).labels ' Base vs Test' ]
 %         title(title_text);
 %         axis('tight');
 %         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-%         text(0,max(temp_data_to_plot_Base_a), 'Stim');
-%         temp_save_name_fig=[chanlocs(cc).labels 'double_one_4rewlev_80_20_BT_GA' ];
+%         %text(0,max(temp_data_to_plot_Base_double_one_80H), 'Stim');
+%         temp_save_name_fig=[chanlocs(cc).labels 'double_one_4rewlev_GA' ];
 %         saveas(fig, temp_save_name_fig, 'png');
 %         saveas(fig, temp_save_name_fig, 'fig');
 %         clear temp_save_name
+% end
 % end
 
 

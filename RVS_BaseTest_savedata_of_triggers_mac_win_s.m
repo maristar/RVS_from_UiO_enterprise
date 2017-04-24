@@ -4,23 +4,27 @@
 % not only the double report that we were checking before. 
 % Renamed from the previous version with the filename *mac.m
 % 18 June 2016 Maria L. Stavrinou at home 
+% 21.3.2017 final datasets
 tic
 clear all 
 close all 
 
 %% Path information
-% Raw_Path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
+% Raw_path='/Volumes/EEG2_MARIA/EEG/RVS/RAW_datasets/'%RVS_Subject104/Base/';
 % %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/RAW_datasets/'; 
 % Analyzed_path='/Volumes/EEG2_MARIA/EEG/RVS/Analyzed_datasets_B_T/'
-% %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
+% % %'/Users/mstavrin/Documents/A_SettingEEG_lab/A_RECORDINGS/Analyzed_datasets/';
+% 
+% Raw_path='Z:\RVS\RAW_datasets\DataRVS\';
+% Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 
-cd(Raw_Path)
+cd(Raw_path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject*');
+listing_raw=dir('RVS_Subject126*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -40,7 +44,8 @@ fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 Sessions={'Base', 'Test'};
 
 % Define which subjects are good and which are bad. 
-bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 26, 30];
+% bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30, 34, 36]; % updated 21.3.2017
+bad_subject_list=[];
 % Old correct_folders=[startfolder 2:6 8:12 14 15 18 21:29 31:33];
 good_subj_list=[]; 
 for kk=1:Num_folders, 
@@ -52,14 +57,15 @@ clear kk
 
 %% Start load
 startfolder=1;
+% For latest dataset put: startfolder=25
 
-for mkk=1:length(good_subj_list)
+for mkk=startfolder:length(good_subj_list)
     kk=good_subj_list(mkk);
     Folder_name=temp22{kk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     % Go to the analysis path
     Analyzed_path_folder=[Analyzed_path temp22{kk,:} '/'];
-    Raw_path_folder=[Raw_Path temp22{kk,:} '/'];
+    Raw_path_folder=[Raw_path temp22{kk,:} '/'];
     cd(Raw_path_folder);
     sessions={'Base','Test'};
     for kkj=1:length(sessions)

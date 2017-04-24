@@ -19,12 +19,12 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 % Define new directories to save data and figures
 % Directory for data
-folder_data_save='Results_Training_FEEDBACK_4parts_4RL_43subj_01MARCH2017';
+folder_data_save='Results_Training_FEEDBACK_4parts_4RL_43subj_21April2017';
 cd(Analyzed_path)
 mkdir(folder_data_save)
 
 %Directory for figures
-folder_figures_save='Figures_Training_FEEDBACK_4parts_4RL_43subj_01MARCH2017';
+folder_figures_save='Figures_Training_FEEDBACK_4parts_4RL_43subj_21April2017';
 cd(Analyzed_path)
 mkdir(folder_figures_save)
 
@@ -72,7 +72,7 @@ Sessions={'Training1', 'Training2'};
 
 %% Start load
 startfolder=1;
-for mkk=startfolder:(length(good_subj_list))
+for mkk=startfolder:3
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
@@ -219,7 +219,7 @@ save chanlocs chanlocs
 
 %% Search for the FRN : 220-350 msec. 
 % Define time limits for the peak detection 
-type='mean';
+type='mean'; % 'base_peak'
 peak_start_time=250;
 peak_end_time=300;
 time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
@@ -252,8 +252,7 @@ cd(Analyzed_path)
 cd(folder_data_save)
 save meanpeak_results_FRN Peak_results
 
-
-%% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
+% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
 % Header sent by Thomas
 %header={'Subject_Num','CPz_Correct_a','CPz_Correct_b', 'CPz_Correct_c',	'CPz_Correct_d', 'CPz_Incorrect_a',	'CPz_Incorrect_b',	'CPz_Incorrect_c',	'CPz_Incorrect_d','CPz_HR_a', 'CPz_HR_b','CPz_HR_c','CPz_HR_d',	'CPz_LR_a',	'CPz_LR_b',	'CPz_LR_c',	'CPz_LR_d'};
 header_raw={'Subject_Num','_Correct_a','_Correct_b', '_Correct_c',	'_Correct_d', '_Incorrect_a',	'_Incorrect_b',	'_Incorrect_c',	'_Incorrect_d','_HR_a', '_HR_b','_HR_c','_HR_d','_LR_a',	'_LR_b',	'_LR_c',	'_LR_d'};
@@ -299,6 +298,89 @@ for cc=1:length(chanlocs)
 end % End for chanlocs
 
 
+
+%% New 21.04.2019 Measure also FRN from base-to-peak from P2
+% Search for the FRN : 220-350 msec. 
+% Define time limits for the peak detection 
+type='base_peak';
+peak_start_time=250;
+peak_end_time=300;
+time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+for mkk=1:(length(good_subj_list))
+    jjk=good_subj_list(mkk);
+   Folder_name=temp22{jjk,:};
+   % For every condition
+   for kk=1:length(conditions)%  : Correct,HR, LR, Wrong
+       temp_condition=conditions(kk);
+       temp_condition_char=char(temp_condition);   
+       % For all the parts
+            for gg=1:length(part_names_all)
+                part_name_temp=part_names_all{gg};
+                part_name_temp_char=char(part_name_temp);         
+                data4channels=Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char);
+                % For all the channels
+                for cc=1:length(numchans); 
+                    chanlocs_temp=chanlocs(cc).labels;
+                    temp_chan=data4channels(cc,:);
+                    [ final_peak_measure ] = RVS_Training_find_mean_ar_peak_measure_v2(temp_chan, peak_start_time, peak_end_time, Fs, timeVec_msec, type);
+                    Peak_results.(Folder_name).(temp_condition_char).(part_name_temp_char).(chanlocs_temp)=final_peak_measure;
+                    clear temp_chan chanlocs_temp
+                end
+               %clear part_name_temp part_name_temp_char data4channels 
+            end           
+   end
+end
+cd(Analyzed_path)
+cd(folder_data_save)
+save meanpeak_base_results_FRN Peak_results
+
+
+
+% Write to a cell, to be a table and then exported to file - to be opened with comma delimiter in excel
+% Header sent by Thomas
+%header={'Subject_Num','CPz_Correct_a','CPz_Correct_b', 'CPz_Correct_c',	'CPz_Correct_d', 'CPz_Incorrect_a',	'CPz_Incorrect_b',	'CPz_Incorrect_c',	'CPz_Incorrect_d','CPz_HR_a', 'CPz_HR_b','CPz_HR_c','CPz_HR_d',	'CPz_LR_a',	'CPz_LR_b',	'CPz_LR_c',	'CPz_LR_d'};
+header_raw={'Subject_Num','_Correct_a','_Correct_b', '_Correct_c',	'_Correct_d', '_Incorrect_a',	'_Incorrect_b',	'_Incorrect_c',	'_Incorrect_d','_HR_a', '_HR_b','_HR_c','_HR_d','_LR_a',	'_LR_b',	'_LR_c',	'_LR_d'};
+% We change the order of conditions here in order to be able to 
+conditions={'Correct', 'Wrong', 'HR','LR',};
+
+for cc=1:length(chanlocs)
+    chanlocs_temp=chanlocs(cc).labels;    
+    %% Make new header
+    for hh=2:length(header_raw);
+        temp=header_raw{1, hh};
+        temp_new=[chanlocs_temp temp];
+        header_new{1,1}=header_raw{1,1};
+        header_new{1,hh}=temp_new;
+    end
+    T(1, :)=header_new;
+    for mkk=1:(length(good_subj_list))
+        jjk=good_subj_list(mkk);% For every subject - folder
+        Folder_name=temp22{jjk,:};
+        T(jjk+1,1)={Folder_name(5:end)};
+        column_counter=0;
+        for kk=1:length(conditions) % For every condition : Correct,Wrong, HR, LR
+            temp_condition=conditions(kk);
+            temp_condition_char=char(temp_condition);  
+            for gg=1:length(part_names_all)
+               column_counter=column_counter+1;
+               disp(column_counter)
+               part_name_temp=part_names_all{gg};
+               part_name_temp_char=char(part_name_temp); 
+               temp_peak_results=Peak_results.(Folder_name).(temp_condition_char).(part_name_temp_char).(chanlocs_temp);
+               T(jjk+1,1+column_counter)=num2cell(temp_peak_results);
+           end% End for parts
+        end % End for conditions 
+    end % End for every subject
+    %% Save the cell into a table and then export to txt, which can be imported in 
+    % excel as a comma delimiter
+    Tnew=cell2table(T, 'VariableNames', header_new);
+    filename_to_save_txt=[chanlocs_temp '_' type 'FRN_results.txt'];
+    filename_to_save_xls=[chanlocs_temp '_' type 'FRN_results.xls'];
+    writetable(Tnew, filename_to_save_txt);
+    writetable(Tnew, filename_to_save_xls);
+    clear T header_new Tnew
+end % End for chanlocs
 
 
 %% P300 detection 

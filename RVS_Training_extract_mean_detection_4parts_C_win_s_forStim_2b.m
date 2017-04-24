@@ -1,11 +1,13 @@
 % 2b is the same as 2. 
 % Extract mean amplitudes for Stim Training. 
 % Maria Stavrinou, March 2017
+ clear all 
+ close all 
  
 %% Have a structure with all data info inside:
 % data_Properties.scope='analysis of stim training no parts and 4 rew levels 43 subjects'
-data_Properties.scope='analysis of stim training 4 parts and 4 rewardbias conditions 43 subjects limits (withIca)'
-data_Properties.scope_short='Stim_4Parts_4RB_ICA_15MARS17';
+data_Properties.scope='analysis of stim training 4 parts and 4 rewardbias conditions 43 subjects limits (noIca)'
+data_Properties.scope_short='Stim_4Parts_4RB_noICA_21April_2017';
 data_Properties.date=date;
 
 %% Define new directories to save data and figures
@@ -20,11 +22,11 @@ cd(Analyzed_path)
 mkdir(folder_data_save)
 data_Properties.folder_data_save=folder_data_save;
 
-%Directory for figures
-folder_figures_save=['Figures_Training_' data_Properties.scope_short];
-cd(Analyzed_path)
-mkdir(folder_figures_save)
-data_Properties.folder_figures_save=folder_figures_save;
+% %Directory for figures % April 2017 not needed creates empty folder. 
+% folder_figures_save=['Figures_Training_' data_Properties.scope_short];
+% cd(Analyzed_path)
+% mkdir(folder_figures_save)
+% data_Properties.folder_figures_save=folder_figures_save;
 
 %% Define list of Folders - Subjects  
 cd(Raw_path);
@@ -76,7 +78,7 @@ data_Properties.part_names_all=part_names_all;
 %header_raw={'Subject_Num','_20L_a','_20L_b', '_20L_c',	'_20L_d', '_50H_a',	'_50H_b',	'_50H_c',	'_50H_d','_50L_a', '_50L_b','_50L_c','_50L_d','_80H_a',	'_80H_b',	'_80H_c',	'_80H_d'};
 
 % Stim 4 reward levels only 
-header_raw={'Subject_Num', '20L', '50H', '50L', '80H'};
+%header_raw={'Subject_Num', '20L', '50H', '50L', '80H'};
 
 % Stim 4 parts only 
 % header_raw={'Subject_Num', 'block_a', 'block_b', 'block_c', 'block_d'};
@@ -94,10 +96,13 @@ for kk=1:length(conditions)
             temp_parts_char=char(temp_parts);
             middle_temp_name=cellstr([temp_condition_char '_' temp_parts_char]);
             header_raw_exp=[header_raw_exp middle_temp_name ];
+            clear temp_parts temp_parts_char middle_temp_name 
         end
     end
+    clear temp_condition temp_condition_char temp_parts temp_parts_char
 end
-clear kk jj
+clear kk jj temp_condition_char temp_condition 
+% SOS save the header_raw_exp to data_Properties.header_raw
 data_Properties.header_raw=header_raw_exp; % changed 13-1-2017
 
 %% Define which subjects to keep in the analysis for FRN here
@@ -119,9 +124,13 @@ data_Properties.good_subj_list=good_subj_list;
 %numchans=[29, 32, 38, 47, 48, 26, 27, 21, 18, 13, 10, 5, 40, 45, 50, 55, 58, 63, 64];
 %numchans=[29, 30, 31, 32, 38, 47, 48];
 % For Stim, more channels. 
-numchans=[21, 22, 25, 26, 29, 30, 31, 32, 33, 38, 47, 48, 58, 59, 62, 63]; % 
+numchans=int8(1:64); % integers indexes
 % So they are: 
 % NumChan - ChanName - Times found noisy 
+% Added for overall ANOVA: 
+% 5: f3
+% 10 fc3
+
 % 21: P3 : 0
 % 22: P5 : 1
 % 25 PO7 : 1
@@ -169,7 +178,7 @@ for mkk=startfolder:(length(good_subj_list))
         
         % Define the new paths            
         Analyzed_path_folder=[Analyzed_path  temp22{jjk,:} '\' session_temp '\'];
-        Raw_path_folder=[Raw_path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp '\'];
+        % Raw_path_folder=[Raw_path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp '\'];
         
         
         for kk=1:length(conditions) % For every condition : Wrong, Correct,HR, LR
@@ -179,9 +188,9 @@ for mkk=startfolder:(length(good_subj_list))
             % Go the Analyzed_path_folder for each subject
             % and search for the set files for each AX, AY condition
             cd(Analyzed_path_folder)
-            Search_for_folder=['*_256__Luck_stim_ICA_' temp_condition_char '*part*.set'];
+            Search_for_folder=['*_256__Luck_stim_' temp_condition_char '*part*.set'];
             listing_sets=dir(Search_for_folder);
-            
+            clear Search_for_folder
             % The program must have found 2 sets, one for part_a and one
             % for part_b for each condition. (or c and d) 
             Num_setfiles=length(listing_sets);
@@ -208,13 +217,11 @@ for mkk=startfolder:(length(good_subj_list))
                 AreWeRight=strcmp(name_file, temp_sets{gg});
                 if AreWeRight==1, 
                     disp(['Working on file ' temp_sets{gg} ' for condition ' temp_condition_char]);
+                    eeglab % april2017, to restart all the variables 
                     EEG = pop_loadset('filename',name_file,'filepath',Analyzed_path_folder);
                     EEG = eeg_checkset( EEG );
                     eeglab redraw
                     
-                    % Get the data and the dimensions of it. 
-                    % Select smaller timepoints, run only once, at start!
-                    % Select smaller timepoints 
                     %if (jjk==startfolder & mm==1 & kk==1 & gg==1)
                         Fs=EEG.srate;
                         chanlocs=EEG.chanlocs; 
@@ -225,15 +232,18 @@ for mkk=startfolder:(length(good_subj_list))
                         timeVec = ((data_pre_trigger):(data_post_trigger));
                         timeVec = timeVec';
                         timeVec_msec = timeVec.*(1000/Fs);
-                        
+                        clear pre_trigger post_trigger data_pre_trigger data_post_trigger
                         % Select new  pre-trigger
 %                         new_pre_trigger=-200;
 %                         new_post_trigger=600;
                         find_new_pre_trigger=find(timeVec_msec>new_pre_trigger);
                         new_pre_trigger_index=min(find_new_pre_trigger);
-
+                        clear find_new_pretrigger
+                        
                         find_new_post_trigger=find(timeVec_msec<new_post_trigger);
                         new_post_trigger_index=max(find_new_post_trigger);
+                        clear find_new_post_trigger
+                    
                         disp('Epoch new shorter duration done')
                         timeVec_msec_new=timeVec_msec(new_pre_trigger_index:new_post_trigger_index);
                         clear timeVec_msec
@@ -244,20 +254,26 @@ for mkk=startfolder:(length(good_subj_list))
                     %end
                         data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);
                         nchanGA=size(data, 1);
-                     if nchanGA>length(numchans)
+                     % This that follows was for the times we had data on
+                     % some channels only, now we have all the 64 channels.
+                     % 
+                        if nchanGA>length(numchans)
                          data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
                          clear data
                          data=data2;
-                     end
+                        end
                      
                     meandata=mean(data, 3);
                     Mean_Subjects.(Folder_name).(temp_condition_char).(part_name_temp_char)=meandata;
-                    clear data
-                end
-              
-            end
-        end
+                    clear data meandata nchanGA
+                end 
+              clear part_name_temp part_name_temp_char AreWeRight
+            end % for gg
+            clear temp_condition temp_condition_char Search_for_folder listing_sets
+        end % for kk
+        clear session_temp Subject_filename_session part_names Analyzed_path_folder
     end % Sessions 
+    clear Folder_name
 end % Subject
 % chanlocs=EEG.chanlocs; 
 
@@ -343,7 +359,9 @@ time_end=new_post_trigger; %600; % TODO sth here why it is deleted
 
 % Store in a structure these interval peaks, the general and the peak for
 % blocks 1, 2,  and those of blocks 3,4.
-% General intervals 
+
+
+% General interval for N1 
 name_interval=['interval_' name_component];
 interval_temp=eval(name_interval);
 data_Properties.(name_interval)=interval_temp;
@@ -362,40 +380,40 @@ data_Properties.(name_interval_2)=interval_temp_2;
 clear interval_temp_2
 
 
-[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+[ Peak_results, Tnew] = peak_detection_all_individ(name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
 
-%% Define time limits for the peak detection 
-name_component='P1';
-type='mean';
-peak_start_time=[];%250
-peak_end_time=[];%300;
-time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
-time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
-
-% Store in a structure these interval peaks, the general and the peak for
-% blocks 1, 2,  and those of blocks 3,4.
-% General intervals 
-name_interval=['interval_' name_component];
-interval_temp=eval(name_interval);
-data_Properties.(name_interval)=interval_temp;
-clear interval_temp
-
-% Intervals 1 (block, 1, 2)
-name_interval_1=['interval_' name_component '_1'];
-interval_temp_1=eval(name_interval_1);
-data_Properties.(name_interval_1)=interval_temp_1;
-clear interval_temp_1
-
-% Intervals 2 (block, 3, 4)
-name_interval_2=['interval_' name_component '_2'];
-interval_temp_2=eval(name_interval_2);
-data_Properties.(name_interval_2)=interval_temp_2;
-clear interval_temp_2
-
-
-[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-
-
+% %% Define time limits for the peak detection 
+% name_component='P1';
+% type='mean';
+% peak_start_time=[];%250
+% peak_end_time=[];%300;
+% time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+% time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+% 
+% % Store in a structure these interval peaks, the general and the peak for
+% % blocks 1, 2,  and those of blocks 3,4.
+% % General intervals 
+% name_interval=['interval_' name_component];
+% interval_temp=eval(name_interval);
+% data_Properties.(name_interval)=interval_temp;
+% clear interval_temp
+% 
+% % Intervals 1 (block, 1, 2)
+% name_interval_1=['interval_' name_component '_1'];
+% interval_temp_1=eval(name_interval_1);
+% data_Properties.(name_interval_1)=interval_temp_1;
+% clear interval_temp_1
+% 
+% % Intervals 2 (block, 3, 4)
+% name_interval_2=['interval_' name_component '_2'];
+% interval_temp_2=eval(name_interval_2);
+% data_Properties.(name_interval_2)=interval_temp_2;
+% clear interval_temp_2
+% 
+% 
+% [ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% 
+% 
 
 %% Search for the FRN or N2(Stim) : 250-300 msec. 
 % Define time limits for the peak detection 
@@ -436,41 +454,41 @@ clear interval_temp_2
 
 clear Peak_results Tnew
 
-%% P300 -a detection 
-% Define time limits for the peak detection 
-name_component='P3a';
-type='mean';
-peak_start_time=360;
-peak_end_time=420;
-time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
-time_end=new_post_trigger;
-% In msec 
-
-% Store in a structure these interval peaks, the general and the peak for
-% blocks 1, 2,  and those of blocks 3,4.
-% General intervals 
-name_interval=['interval_' name_component];
-interval_temp=eval(name_interval);
-data_Properties.(name_interval)=interval_temp;
-clear interval_temp
-
-% Intervals 1 (block, 1, 2)
-name_interval_1=['interval_' name_component '_1'];
-interval_temp_1=eval(name_interval_1);
-data_Properties.(name_interval_1)=interval_temp_1;
-clear interval_temp_1
-
-% Intervals 2 (block, 3, 4)
-name_interval_2=['interval_' name_component '_2'];
-interval_temp_2=eval(name_interval_2);
-data_Properties.(name_interval_2)=interval_temp_2;
-clear interval_temp_2
-
-[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-
-
-%[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-clear Peak_results Tnew
+% %% P300 -a detection 
+% % Define time limits for the peak detection 
+% name_component='P3a';
+% type='mean';
+% peak_start_time=360;
+% peak_end_time=420;
+% time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+% time_end=new_post_trigger;
+% % In msec 
+% 
+% % Store in a structure these interval peaks, the general and the peak for
+% % blocks 1, 2,  and those of blocks 3,4.
+% % General intervals 
+% name_interval=['interval_' name_component];
+% interval_temp=eval(name_interval);
+% data_Properties.(name_interval)=interval_temp;
+% clear interval_temp
+% 
+% % Intervals 1 (block, 1, 2)
+% name_interval_1=['interval_' name_component '_1'];
+% interval_temp_1=eval(name_interval_1);
+% data_Properties.(name_interval_1)=interval_temp_1;
+% clear interval_temp_1
+% 
+% % Intervals 2 (block, 3, 4)
+% name_interval_2=['interval_' name_component '_2'];
+% interval_temp_2=eval(name_interval_2);
+% data_Properties.(name_interval_2)=interval_temp_2;
+% clear interval_temp_2
+% 
+% [ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% 
+% 
+% %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% clear Peak_results Tnew
 
 %% P300 -b detection 
 % Define time limits for the peak detection 
@@ -545,41 +563,41 @@ clear interval_temp_2
 % clear Peak_results Tnew
 
 % P2 
-%% P2 -a detection 
-% Define time limits for the peak detection 
-name_component='P2';
-type='mean';
-peak_start_time=[];
-peak_end_time=[];
-time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
-time_end=new_post_trigger;
-% In msec 
-
-% Store in a structure these interval peaks, the general and the peak for
-% blocks 1, 2,  and those of blocks 3,4.
-% General intervals 
-name_interval=['interval_' name_component];
-interval_temp=eval(name_interval);
-data_Properties.(name_interval)=interval_temp;
-clear interval_temp
-
-% Intervals 1 (block, 1, 2)
-name_interval_1=['interval_' name_component '_1'];
-interval_temp_1=eval(name_interval_1);
-data_Properties.(name_interval_1)=interval_temp_1;
-clear interval_temp_1
-
-% Intervals 2 (block, 3, 4)
-name_interval_2=['interval_' name_component '_2'];
-interval_temp_2=eval(name_interval_2);
-data_Properties.(name_interval_2)=interval_temp_2;
-clear interval_temp_2
-
-[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-
-
-% %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-% clear Peak_results Tnew
+% %% P2 -a detection 
+% % Define time limits for the peak detection 
+% name_component='P2';
+% type='mean';
+% peak_start_time=[];
+% peak_end_time=[];
+% time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+% time_end=new_post_trigger;
+% % In msec 
+% 
+% % Store in a structure these interval peaks, the general and the peak for
+% % blocks 1, 2,  and those of blocks 3,4.
+% % General intervals 
+% name_interval=['interval_' name_component];
+% interval_temp=eval(name_interval);
+% data_Properties.(name_interval)=interval_temp;
+% clear interval_temp
+% 
+% % Intervals 1 (block, 1, 2)
+% name_interval_1=['interval_' name_component '_1'];
+% interval_temp_1=eval(name_interval_1);
+% data_Properties.(name_interval_1)=interval_temp_1;
+% clear interval_temp_1
+% 
+% % Intervals 2 (block, 3, 4)
+% name_interval_2=['interval_' name_component '_2'];
+% interval_temp_2=eval(name_interval_2);
+% data_Properties.(name_interval_2)=interval_temp_2;
+% clear interval_temp_2
+% 
+% [ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% 
+% 
+% % %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% % clear Peak_results Tnew
 
 %% Save data properties
 cd(Analyzed_path)

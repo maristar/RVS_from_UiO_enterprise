@@ -2,7 +2,7 @@
 % automatically 
 % Maria Stavrinou
 % 20.9.2016
-
+% For N2pc , checking 23.03.2017
 clear all 
 close all 
 tic
@@ -61,7 +61,8 @@ New_saving_path_results=['Mean_All_Subjects_' trigger_type];
 mkdir(New_saving_path_results)
 disp(['Data will be saved in ' New_saving_path_results])
 % Savename for the matlab variable with the grandaverage.
-savename2=['Mean_Subjects_' trigger_type];+,å6savename_all_trials=['All_trials_' trigger_type];
+savename2=['Mean_Subjects_' trigger_type];
+savename_all_trials=['All_trials_' trigger_type];
 %% Define electrodes of interest
 chan_numbers=[1:30];
 

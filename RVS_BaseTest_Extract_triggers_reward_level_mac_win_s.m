@@ -7,12 +7,22 @@
 clear all 
 close all 
 tic
-%% Path information
-Raw_Path='Z:\RVS\RAW_datasets\DataRVS\';
-Analyzed_path='Z:\RVS\Analyzed_datasets\';
 
 
-cd(Raw_Path)
+%% Have a structure with all data info inside:
+% data_Properties.scope='analysis of stim training no parts and 4 rew levels 43 subjects'
+data_Properties.scope='analysis of base-test'
+data_Properties.scope_short='BT_rewlevs';
+data_Properties.date=date;
+
+%% Define new directories to save data and figures
+Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
+Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
+data_Properties.Raw_path=Raw_path;
+data_Properties.Analyzed_path=Analyzed_path;
+
+
+cd(Raw_path)
 % Define list of folders 
 listing_raw=dir('RVS_Subject*');
 Num_folders=length(listing_raw);
@@ -30,7 +40,7 @@ fprintf(fid, '%s\t%s\n', 'Name of trigger ',' Number of trials');
 Sessions={'Base', 'Test'};
 
 % Define which subjects are good and which are bad. 
-bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30];
+bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 30, 34, 36]; % updated 21.3.2017
 % Old correct_folders=[startfolder 2:6 8:12 14 15 18 21:29 31:33];
 good_subj_list=[]; 
 for kk=1:Num_folders, 
@@ -41,24 +51,24 @@ end
 clear kk 
 
 %% Start load
-startfolder=1;
+startfolder=34;
 
-for mkk=1:length(good_subj_list)
+for mkk=29:length(good_subj_list)
     jjk=good_subj_list(mkk);
     Folder_name=temp22{jjk,:};
     fprintf(' ***  Working on subject %s: %s\n', num2str(mkk), Folder_name)
     Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\'];
-    Raw_path_folder=[Raw_Path temp22{jjk,:} '\'];
+    Raw_path_folder=[Raw_path temp22{jjk,:} '\'];
     cd(Raw_path_folder);
     for jj=1:length(Sessions)
         session_temp=Sessions{jj};
-        cd(Raw_Path);
+        cd(Raw_path);
         cd(temp22{jjk,:});
         cd(temp22{jjk,:});
         %mkdir(session_temp); %%???
         cd(session_temp);%%% ????
         Analyzed_path_folder=[Analyzed_path temp22{jjk,:} '\'  session_temp '\'];
-        Raw_path_folder=[Raw_Path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp '\'];
+        Raw_path_folder=[Raw_path temp22{jjk,:} '\' temp22{jjk,:} '\' session_temp '\'];
         
         % Go to Raw_path_folder
         cd(Raw_path_folder);
@@ -227,4 +237,4 @@ clear T
     end % For sessions 
     clear T
 end % For folders
-
+fclose(fid)

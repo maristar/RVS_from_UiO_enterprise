@@ -20,7 +20,7 @@ chan_names=chan_names';
 Which_channel='Fz'; 
 Which_channel=char(Which_channel);
 
-for kk=1:30,
+for kk=1:66,
 if strcmp(chan_names{kk,:}, Which_channel)==1
     disp(num2str(kk))
     chan_index=kk;

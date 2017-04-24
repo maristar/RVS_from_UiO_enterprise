@@ -31,7 +31,7 @@ Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 %% Look how many subjects we have 
 cd(Raw_Path)
 % Define list of folders 
-listing_raw=dir('RVS_Subject211*');
+listing_raw=dir('RVS_Subject126*');
 Num_folders=length(listing_raw);
 for kk=1:Num_folders
     temp22{kk,:}=listing_raw(kk).name;
@@ -40,7 +40,7 @@ for kk=1:Num_folders
 clear kk listing_raw
 
 % Define which subjects to keep in the analysis for FRN here
-% bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 26, 30];
+%bad_subject_list=[7, 9, 13, 16, 17, 19, 20, 24, 26, 30];
 bad_subject_list=[];
 good_subj_list=[]; 
 for kk=1:Num_folders, 

@@ -7,13 +7,18 @@ function butterfies_and_topoplots( data, text_for_condition, chanlocs, timeVec_m
 % <FiguresGA_RVS_FRN_noparts_accLuck -TODO to fix that. 
 % 17.10.2016 MLS
 
-% First you have to load the dataset in MATLAB AND eegLAB.
+% First you have to load the dataset in MATLAB AND eegLAB% ? as a matlab
+% vector? 06.04.2017
+% 
 
 % Part 1. Butterfly plot
 [nchan ntimepoints]=size(EEG.data);
 data=EEG.data;
-fig4=figure;
 
+[nchan ntimepoints]=size(data);
+
+%% butterfly plot
+fig5=figure;
 for kk=1:nchan
     tempchan=data(kk,:);
 plot(timeVec_msec, tempchan); ylim([-12 14]);set(gca,'fontsize', 16); hold on;
@@ -21,14 +26,14 @@ end
 clear kk
 xlabel('Time(ms)'); ylabel('Amplitude (uV)'); title(['GA ' text_for_condition]);
 temp_save_name_fig=['Butterfly_plot_' text_for_condition];
-saveas(fig4, temp_save_name_fig, 'tiff');
-saveas(fig4, temp_save_name_fig, 'fig');
+saveas(fig5, temp_save_name_fig, 'tiff');
+saveas(fig5, temp_save_name_fig, 'fig');
 %close(fig3)
 
 
 %% Define time limits and ask for them 
-name_component='P3b2, peak 519.5 msec';
-timeinmsec=519.50;
+name_component='P3, peak 398 msec';
+timeinmsec=398;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 
@@ -46,9 +51,9 @@ topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_conditio
 
 
 %% Define time limits and ask for them 
-name_component='N2';
-text_for_condition='20L'
-timeinmsec=296.9;
+name_component='N2, 261.7';
+%text_for_condition='20'
+timeinmsec=261.7;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 
@@ -70,6 +75,12 @@ topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_conditio
 name_component='P2';
 text_for_condition='20L'
 timeinmsec=203.1;
+topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
+
+%% Define time limits and ask for them 
+text_for_condition='Base, double report';
+name_component='P3';
+timeinmsec=386.7;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 end
