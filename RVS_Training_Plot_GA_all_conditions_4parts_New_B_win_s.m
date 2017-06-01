@@ -23,9 +23,9 @@ Raw_path='Y:\Prosjekt\RVS_43_subjects\Raw_datasets\DataRVS\';
 Analyzed_path='Y:\Prosjekt\RVS_43_subjects\Analyzed_datasets\';
 
 % Path to save the figures 
-path_figures='Figures_GA_Training_Stim_4parts_RL_10MARCH2017';
+path_figures='Figures_GA_Training_Stim_4parts_4RL_ICA_09MAY2017';
 % Path to save the data of GA 
-path_dataGA='Data_GA_Training_Stim_4parts_RL_10MARCH2017';
+path_dataGA='Data_GA_Training_Stim_4parts_4RL_ICA_09MAY2017';
 
 %% Define list of Folders - Subjects  
 cd(Raw_path);
@@ -66,7 +66,11 @@ clear yyy nnn temp_part_name temp_condition
 bad_subject_list=[1, 4, 8, 18, 22, 26, 30]; % ch 02.01.2017 Stim 
 
 %bad_subject_list=[6,8,16,18,22,32,34,37,40]; % FRN 
-good_subj_list=[]; for kk=1:Num_folders, if ~ismember(kk, bad_subject_list), good_subj_list=[good_subj_list kk]; end; end
+good_subj_list=[]; for kk=1:Num_folders, 
+    if ~ismember(kk, bad_subject_list), 
+        good_subj_list=[good_subj_list kk]; 
+    end; 
+end
 
 
 %% Start load
@@ -100,7 +104,8 @@ for mkk=1:length(good_subj_list)
             % and search for the set files for each AX, AY condition
             cd(Analyzed_path_folder)
             %Search_for_folder=['*_256__Luck_triggers_' temp_condition_char '*part*.set']; % for FRN
-            Search_for_folder=['*_256__Luck_stim_' temp_condition_char '*part*.set']; % for Stim 
+            % Search_for_folder=['*_256__Luck_stim_' temp_condition_char '*part*.set']; % for Stim 
+            Search_for_folder=['*_256__Luck_stim_ICA_' temp_condition_char '*part*.set']; % for Stim 
             listing_sets=dir(Search_for_folder);
             
             % The program must have found 2 sets, one for part_a and one
@@ -167,13 +172,15 @@ for mkk=1:length(good_subj_list)
                     
                     data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);  %TODO
                     nchanGA=size(data, 1);
-                     if nchanGA>5
-                         numchans=[21, 22, 25, 26, 29, 30, 31, 32, 33, 38, 47, 48, 58, 59, 62, 63]; % 
-                         % numchans=[29, 32, 38, 47, 48];
-                         data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
-                         clear data
-                         data=data2;
-                     end
+                    % The below is connected because wwe need all the
+                    % electordes 09May2017
+%                      if nchanGA>5
+%                          numchans=[21, 22, 25, 26, 29, 30, 31, 32, 33, 38, 47, 48, 58, 59, 62, 63]; % 
+%                          % numchans=[29, 32, 38, 47, 48];
+%                          data2=EEG.data(numchans, new_pre_trigger_index:new_post_trigger_index, :);
+%                          clear data
+%                          data=data2;
+%                      end
 %                     ntimeGA=size(data, 2); 
 %                     ntrigsGA=size(data, 3);
                                           
@@ -234,10 +241,9 @@ save timeVec_msec timeVec_msec
 % % time_epoch_to_ms_idp=max(time_epoch_to_ms);
 % 
 % % New! Get the electrodes we got!
-%numchans=[29, 32, 38, 47, 48];
-chanlocs=EEG.chanlocs(numchans); 
-save chanlocs chanlocs
-clear EEG ALLEEG CURRENTSET CURRENTSTUDY LASTCOM STUDY
+numchans=1:64;
+
+% clear EEG ALLEEG CURRENTSET CURRENTSTUDY LASTCOM STUDY
 %% Ploting area
 
 % Make where to save
@@ -246,12 +252,14 @@ cd(Analyzed_path)
 mkdir(path_figures);
 cd(path_figures);
 
-% Plots for 80-20 in 4 subplots for block1, 2, 3, 4
+% Plots for GA total
+totalGA=zeros(length(numchans),255); % 64 
+fig=figure;
 for cc=1:length(numchans);% [30,37, 38, 47]%  
-    kkm=2%1:length(conditions)
-        fig=figure(cc+1); %(cc+length(chanlocs)); 
+    %kkm=2%1:length(conditions)
+        % fig=figure(cc+1); %(cc+length(chanlocs)); 
         
-        set(gca,'colororder',[0 0 1;1 0 1],'nextplot','add'); % ; 1 0 1; 0 1 1
+        % set(gca,'colororder',[0 0 1;1 0 1],'nextplot','add'); % ; 1 0 1; 0 1 1
         % set(gca,'colororder',[0 0 1;0 0 1; 0 0 1; 0 0 1],'nextplot','add');
         set(gca,'fontsize', 16);
         temp_condition_80=conditions(4);
@@ -260,21 +268,51 @@ for cc=1:length(numchans);% [30,37, 38, 47]%
         temp_condition_20=conditions(1);
         temp_condition_20_char=char(temp_condition_20);
         
+        temp_condition_50L_char=char(conditions(2));
+        temp_condition_50H_char=char(conditions(3));
         
+        % the 80s
         temp_data_to_plot_80a=dataGA.(temp_condition_80_char).part_a_GA(cc,:);
         temp_data_to_plot_80b=dataGA.(temp_condition_80_char).part_b_GA(cc,:);
         temp_data_to_plot_80c=dataGA.(temp_condition_80_char).part_c_GA(cc,:);
         temp_data_to_plot_80d=dataGA.(temp_condition_80_char).part_d_GA(cc,:);
         
+        temp_80=temp_data_to_plot_80a+temp_data_to_plot_80b+temp_data_to_plot_80c+temp_data_to_plot_80d;
         % since our statistical significant result, p300 increases with
         % blocks, we take this as max and min 
-        max_for_plot=max(temp_data_to_plot_80d);
-        min_for_plot=min(temp_data_to_plot_80d);
         
+        % The 50Ls
+        temp_data_to_plot_50La=dataGA.(temp_condition_50L_char).part_a_GA(cc,:);
+        temp_data_to_plot_50Lb=dataGA.(temp_condition_50L_char).part_b_GA(cc,:);
+        temp_data_to_plot_50Lc=dataGA.(temp_condition_50L_char).part_c_GA(cc,:);
+        temp_data_to_plot_50Ld=dataGA.(temp_condition_50L_char).part_d_GA(cc,:);
+        
+        temp_50L=temp_data_to_plot_50La+temp_data_to_plot_50Lb+temp_data_to_plot_50Lc+temp_data_to_plot_50Ld;
+        
+        % The 50Hs
+        temp_data_to_plot_50Ha=dataGA.(temp_condition_50H_char).part_a_GA(cc,:);
+        temp_data_to_plot_50Hb=dataGA.(temp_condition_50L_char).part_b_GA(cc,:);
+        temp_data_to_plot_50Hc=dataGA.(temp_condition_50L_char).part_c_GA(cc,:);
+        temp_data_to_plot_50Hd=dataGA.(temp_condition_50L_char).part_d_GA(cc,:);
+        
+        temp_50H=temp_data_to_plot_50Ha+temp_data_to_plot_50Hb+temp_data_to_plot_50Hc+temp_data_to_plot_50Hd;
+        
+        
+        % The 20s
         temp_data_to_plot_20a=dataGA.(temp_condition_20_char).part_a_GA(cc,:);
         temp_data_to_plot_20b=dataGA.(temp_condition_20_char).part_b_GA(cc,:);
         temp_data_to_plot_20c=dataGA.(temp_condition_20_char).part_c_GA(cc,:);
         temp_data_to_plot_20d=dataGA.(temp_condition_20_char).part_d_GA(cc,:);
+        
+        temp_20=temp_data_to_plot_20a+temp_data_to_plot_20b+temp_data_to_plot_20c+temp_data_to_plot_20d;
+        
+        temp_total=temp_20+temp_80+temp_50L+temp_50H;
+        
+        tempGA=squeeze(totalGA(cc,:));
+        totalGA(cc,:)=cat(2, tempGA, temp_total);
+        
+        max_for_plot=max(temp_total);
+        min_for_plot=min(temp_total);
         
         % have in the title the channel 
         title_text=[chanlocs(cc).labels];
@@ -285,44 +323,52 @@ for cc=1:length(numchans);% [30,37, 38, 47]%
         end
         clear jj 
         
-       
-        a=subplot(4,1,1);  
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80a, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20a, 'Linewidth', 2, 'LineStyle', '-'); 
-        axis('tight');
+        plot(timeVec_msec, temp_total); axis('tight');
         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
-        ylabel('amplitude (uV)');xlabel('time (msec)')
-        ylim([min_for_plot max_for_plot])
+        ylabel('amplitude (uV)');xlabel('time (msec)') %, 'Linewidth', 2, 'LineStyle', '-');
+        % if you want butterfly keep the hold on;
+        hold on;
         
-        b=subplot(4,1,2); 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80b, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20b, 'Linewidth', 2, 'LineStyle', '-'); 
-        ylim([min_for_plot max_for_plot])
-        
-        c=subplot(4,1,3); 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80c, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20c, 'Linewidth', 2, 'LineStyle', '-'); 
-        ylim([min_for_plot max_for_plot])
+        % ylim([min_for_plot max_for_plot])
         
         
-        d=subplot(4,1,4); 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80d, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
-        plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20d, 'Linewidth', 2, 'LineStyle', '-'); 
-        legend('80','20',  'Location', 'best');
-        ylim([min_for_plot max_for_plot])
-        
-        
+%         a=subplot(4,1,1);  
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80a, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20a, 'Linewidth', 2, 'LineStyle', '-'); 
+%         axis('tight');
+%         SP=0; line([SP SP], get(gca, 'ylim'), 'Color', [0 0 1]);
+%         ylabel('amplitude (uV)');xlabel('time (msec)')
+%         ylim([min_for_plot max_for_plot])
+%         
+%         b=subplot(4,1,2); 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80b, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20b, 'Linewidth', 2, 'LineStyle', '-'); 
+%         ylim([min_for_plot max_for_plot])
+%         
+%         c=subplot(4,1,3); 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80c, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20c, 'Linewidth', 2, 'LineStyle', '-'); 
+%         ylim([min_for_plot max_for_plot])
+%         
+%         
+%         d=subplot(4,1,4); 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_80d, 'Linewidth', 2, 'LineStyle', '-'); hold on; 
+%         plot(timeVec_msec(new_pre_trigger_index:new_post_trigger_index), temp_data_to_plot_20d, 'Linewidth', 2, 'LineStyle', '-'); 
+%         legend('80','20',  'Location', 'best');
+%         ylim([min_for_plot max_for_plot])
+%         
+%         
         % give a title
 
         %text(0,max(temp_data_to_plot_a), 'Feedback');
-        temp_save_name_fig=[chanlocs(cc).labels '_RVS_GA_4RL_4bl_10mar17'];
+        
+    end
+
+temp_save_name_fig=['Training_Stim_GA_total_090517'];
         saveas(fig, temp_save_name_fig, 'png');
         saveas(fig, temp_save_name_fig, 'fig');
         clear temp_save_name
         close(fig)
-    end
-
-%
 
 % % % Plots for HR- LR FRN
 % for cc=1:length(chanlocs)   

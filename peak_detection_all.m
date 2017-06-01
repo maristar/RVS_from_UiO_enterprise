@@ -111,8 +111,14 @@ for cc=1:length(chanlocs)
     %% Save the cell into a table and then export to txt, which can be imported in 
     % excel as a comma delimiter
     Tnew=cell2table(T, 'VariableNames', header_new);
-    filename_to_save_txt=[chanlocs_temp '_' type '_' name_component '_results.txt'];
-    filename_to_save_xls=[chanlocs_temp '_' type '_' name_component '_results.xls'];
+    % Try to get a condition_type, used only for AXCPT kids. 18.05.2017
+    condition_type=[];
+    try 
+        condition_type=data_Properties.condition_type;
+    end
+    
+    filename_to_save_txt=[chanlocs_temp '_' type '_' name_component '_' condition_type '_results.txt'];
+    filename_to_save_xls=[chanlocs_temp '_' type '_' name_component '_' condition_type '_results.xls'];
     writetable(Tnew, filename_to_save_txt);
     writetable(Tnew, filename_to_save_xls);
     % clear T header_new Tnew

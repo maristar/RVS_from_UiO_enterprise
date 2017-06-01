@@ -41,8 +41,8 @@ for mkk=1:(length(good_subj_list)) % For every subject ( in good_subj_list)
     Folder_name=temp22{jjk,:}; 
                            
     % Define individual limits (average of the two Training sessions)
-    peak_start_time=interval_temp_gen(jjk,1);
-    peak_end_time=interval_temp_gen(jjk,2);
+    peak_start_time=interval_temp_gen(jjk,1); % Ok checked 25.4
+    peak_end_time=interval_temp_gen(jjk,2); % Ok checked 25.4
    
    % For every condition
    for kk=1:length(conditions)%  : For FRN Correct,HR, LR, Wrong, Or for Stim stim_20L_corr, stim_50H_corr etc
@@ -164,8 +164,8 @@ for cc=1:length(chanlocs)
     %% Save the cell into a table and then export to txt, which can be imported in 
     % excel as a comma delimiter
     Tnew=cell2table(T, 'VariableNames', header_new);
-    filename_to_save_txt=[chanlocs_temp '_' name_component '_' type '_april24_results.txt'];
-    filename_to_save_xls=[chanlocs_temp '_' name_component '_' type '_april24_results.xls'];
+    filename_to_save_txt=[chanlocs_temp '_' name_component '_' type '_april25_results.txt'];
+    filename_to_save_xls=[chanlocs_temp '_' name_component '_' type '_april25_results.xls'];
     writetable(Tnew, filename_to_save_txt);
     writetable(Tnew, filename_to_save_xls);
     % clear T header_new Tnew

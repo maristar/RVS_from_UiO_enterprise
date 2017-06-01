@@ -6,8 +6,8 @@
  
 %% Have a structure with all data info inside:
 % data_Properties.scope='analysis of stim training no parts and 4 rew levels 43 subjects'
-data_Properties.scope='analysis of stim training 4 parts and 4 rewardbias conditions 43 subjects limits (noIca)'
-data_Properties.scope_short='Stim_4Parts_4RB_noICA_24April_2017_test_somechannels';
+data_Properties.scope='analysis of stim training 4 parts and 4 rewardbias conditions 43 subjects limits (Ica)'
+data_Properties.scope_short='Stim_4Parts_4RB_ICA_09Mai_2017_p1p2p3a';
 data_Properties.date=date;
 
 %% Define new directories to save data and figures
@@ -124,7 +124,7 @@ data_Properties.good_subj_list=good_subj_list;
 % numchans=[29, 32, 38, 47, 48, 26, 27, 21, 18, 13, 10, 5, 40, 45, 50, 55, 58, 63, 64];
 % numchans=[29, 30, 31, 32, 38, 47, 48];
 % For Stim, more channels. 
-%numchans=int8(1:64); % integers indexes
+numchans=int8(1:64); % integers indexes
 % So they are: 
 % NumChan - ChanName - Times found noisy 
 % Added for overall ANOVA: 
@@ -188,7 +188,7 @@ for mkk=startfolder:(length(good_subj_list))
             % Go the Analyzed_path_folder for each subject
             % and search for the set files for each AX, AY condition
             cd(Analyzed_path_folder)
-            Search_for_folder=['*_256__Luck_stim_' temp_condition_char '*part*.set'];
+            Search_for_folder=['*_256__Luck_stim_ICA_' temp_condition_char '*part*.set'];
             listing_sets=dir(Search_for_folder);
             clear Search_for_folder
             % The program must have found 2 sets, one for part_a and one
@@ -223,15 +223,15 @@ for mkk=startfolder:(length(good_subj_list))
                     eeglab redraw
                     
                     %if (jjk==startfolder & mm==1 & kk==1 & gg==1)
-%                         Fs=EEG.srate;
-%                         chanlocs=EEG.chanlocs; 
-%                         pre_trigger = EEG.xmin*1000; %msec -199.2188 EEGLAB has the minus infront, 12.09.2016
-%                         post_trigger = EEG.xmax*1000; %msec +796.8750
-%                         data_pre_trigger = floor(pre_trigger*Fs/1000);
-%                         data_post_trigger = floor(post_trigger*Fs/1000);
-%                         timeVec = ((data_pre_trigger):(data_post_trigger));
-%                         timeVec = timeVec';
-%                         timeVec_msec = timeVec.*(1000/Fs);
+                        Fs=EEG.srate;
+                        chanlocs=EEG.chanlocs; 
+                        pre_trigger = EEG.xmin*1000; %msec -199.2188 EEGLAB has the minus infront, 12.09.2016
+                        post_trigger = EEG.xmax*1000; %msec +796.8750
+                        data_pre_trigger = floor(pre_trigger*Fs/1000);
+                        data_post_trigger = floor(post_trigger*Fs/1000);
+                        timeVec = ((data_pre_trigger):(data_post_trigger));
+                        timeVec = timeVec';
+                        timeVec_msec = timeVec.*(1000/Fs);
 %                         clear pre_trigger post_trigger data_pre_trigger data_post_trigger
 %                         % Select new  pre-trigger
 % %                         new_pre_trigger=-200;
@@ -249,11 +249,12 @@ for mkk=startfolder:(length(good_subj_list))
 %                         clear timeVec_msec
                         % Seems important and a correction made in
                         % Copenhagen
-                        timeVec_msec=timeVec_msec_new;
-                        clear timeVec_msec_new;
+                        % timeVec_msec=timeVec_msec_new;
+                        % clear timeVec_msec_new;
                     %end
-                        data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);
-                        nchanGA=size(data, 1);
+                    % data=EEG.data(:, new_pre_trigger_index:new_post_trigger_index, :);
+                    data=EEG.data(:,:,:);
+                    nchanGA=size(data, 1);
                      % This that follows was for the times we had data on
                      % some channels only, now we have all the 64 channels.
                      % 
@@ -292,8 +293,8 @@ save chanlocs chanlocs
 
 data_Properties.timeVec_msec=timeVec_msec;
 data_Properties.Fs=Fs;
-data_Properties.new_pretrigger=new_pre_trigger;
-data_Properties.new_post_trigger=new_post_trigger;
+data_Properties.new_pretrigger=pre_trigger;
+data_Properties.new_post_trigger=post_trigger;
 data_Properties.chanlocs=chanlocs;
 data_Properties.Mean_Subjects=Mean_Subjects;
 
@@ -349,11 +350,18 @@ data_Properties.P3b_2=interval_P3b_2;
 
 save data_Properties data_Properties
 
+%% For this C-version we use the same time limits. 
+new_pre_trigger=pre_trigger;
+new_post_trigger=post_trigger;
+
+
+
 %% Define time limits for the peak detection 
 name_component='N1';
 type='mean';
 peak_start_time=[];%250
 peak_end_time=[];%300;
+
 time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
 time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
 
@@ -386,55 +394,14 @@ savename_temp=[name_component '_' type '_detection'];
 data_Properties.(savename_temp).Peak_results=Peak_results;
 data_Properties.(savename_temp).Table=Tnew;
 clear Peak_results Tnew savename_temp
-% %% Define time limits for the peak detection 
-% name_component='P1';
-% type='mean';
-% peak_start_time=[];%250
-% peak_end_time=[];%300;
-% time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
-% time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
-% 
-% % Store in a structure these interval peaks, the general and the peak for
-% % blocks 1, 2,  and those of blocks 3,4.
-% % General intervals 
-% name_interval=['interval_' name_component];
-% interval_temp=eval(name_interval);
-% data_Properties.(name_interval)=interval_temp;
-% clear interval_temp
-% 
-% % Intervals 1 (block, 1, 2)
-% name_interval_1=['interval_' name_component '_1'];
-% interval_temp_1=eval(name_interval_1);
-% data_Properties.(name_interval_1)=interval_temp_1;
-% clear interval_temp_1
-% 
-% % Intervals 2 (block, 3, 4)
-% name_interval_2=['interval_' name_component '_2'];
-% interval_temp_2=eval(name_interval_2);
-% data_Properties.(name_interval_2)=interval_temp_2;
-% clear interval_temp_2
-% 
-% cd(Analyzed_path)
-% cd(folder_data_save)
-% [ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-% savename_temp=[name_component '_' type '_detection'];
-% data_Properties.(savename_temp).Peak_results=Peak_results;
-% data_Properties.(savename_temp).Table=Tnew;
-% clear Peak_results Tnew savename_temp
-% 
-
-%% Search for the FRN or N2(Stim) : 250-300 msec. 
-% Define time limits for the peak detection 
-name_component='N2'; %FRN
+%% Define time limits for the peak detection 
+name_component='P1';
 type='mean';
-peak_start_time=[]; %250;
-peak_end_time=[]; %300;
+peak_start_time=[];%250
+peak_end_time=[];%300;
 time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
 time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
 
-name_interval=['interval_' name_component];
-
-% For individual peaks only the next  
 % Store in a structure these interval peaks, the general and the peak for
 % blocks 1, 2,  and those of blocks 3,4.
 % General intervals 
@@ -462,21 +429,20 @@ savename_temp=[name_component '_' type '_detection'];
 data_Properties.(savename_temp).Peak_results=Peak_results;
 data_Properties.(savename_temp).Table=Tnew;
 clear Peak_results Tnew savename_temp
-% %% For general peak intervals
-% [ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-% SOS TO DO
-clear Peak_results Tnew
 
-% %% P300 -a detection 
+
+% %% Search for the FRN or N2(Stim) : 250-300 ms+ec. 
 % % Define time limits for the peak detection 
-% name_component='P3a';
+% name_component='N2'; %FRN
 % type='mean';
-% peak_start_time=360;
-% peak_end_time=420;
+% peak_start_time=[]; %250;
+% peak_end_time=[]; %300;
 % time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
-% time_end=new_post_trigger;
-% % In msec 
+% time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
 % 
+% name_interval=['interval_' name_component];
+% 
+% % For individual peaks only the next  
 % % Store in a structure these interval peaks, the general and the peak for
 % % blocks 1, 2,  and those of blocks 3,4.
 % % General intervals 
@@ -504,16 +470,17 @@ clear Peak_results Tnew
 % data_Properties.(savename_temp).Peak_results=Peak_results;
 % data_Properties.(savename_temp).Table=Tnew;
 % clear Peak_results Tnew savename_temp
-% 
-% %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% % %% For general peak intervals
+% % [ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% % SOS TO DO
 % clear Peak_results Tnew
 
-%% P300 -b detection 
+%% P300 -a detection 
 % Define time limits for the peak detection 
-name_component='P3b';
+name_component='P3a';
 type='mean';
-peak_start_time=[]; %500;
-peak_end_time=[]; %550;
+peak_start_time=[];%360;
+peak_end_time=[];%420;
 time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
 time_end=new_post_trigger;
 % In msec 
@@ -546,57 +513,16 @@ data_Properties.(savename_temp).Peak_results=Peak_results;
 data_Properties.(savename_temp).Table=Tnew;
 clear Peak_results Tnew savename_temp
 
-% %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-clear Peak_results Tnew
+% % %% For general peak intervals (maybe meaning not individual ones)
+%[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% clear Peak_results Tnew
 
-
-%%  Peak detection 
-name_component='N3';
-type='mean';
-peak_start_time=[]; %430;
-peak_end_time=[];% 490;
-time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
-time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
-
-% Store in a structure these interval peaks, the general and the peak for
-% blocks 1, 2,  and those of blocks 3,4.
-% General intervals 
-name_interval=['interval_' name_component];
-interval_temp=eval(name_interval);
-data_Properties.(name_interval)=interval_temp;
-clear interval_temp
-
-% Intervals 1 (block, 1, 2)
-name_interval_1=['interval_' name_component '_1'];
-interval_temp_1=eval(name_interval_1);
-data_Properties.(name_interval_1)=interval_temp_1;
-clear interval_temp_1
-
-% Intervals 2 (block, 3, 4)
-name_interval_2=['interval_' name_component '_2'];
-interval_temp_2=eval(name_interval_2);
-data_Properties.(name_interval_2)=interval_temp_2;
-clear interval_temp_2
-
-cd(Analyzed_path)
-cd(folder_data_save)
-[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-savename_temp=[name_component '_' type '_detection'];
-data_Properties.(savename_temp).Peak_results=Peak_results;
-data_Properties.(savename_temp).Table=Tnew;
-clear Peak_results Tnew savename_temp
-% 
-% %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
-% 
-clear Peak_results Tnew
-
-% P2 
-% %% P2 -a detection 
+% %% P300 -b detection 
 % % Define time limits for the peak detection 
-% name_component='P2';
+% name_component='P3b';
 % type='mean';
-% peak_start_time=[];
-% peak_end_time=[];
+% peak_start_time=[]; %500;
+% peak_end_time=[]; %550;
 % time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
 % time_end=new_post_trigger;
 % % In msec 
@@ -631,6 +557,89 @@ clear Peak_results Tnew
 % 
 % % %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
 % % clear Peak_results Tnew
+
+
+% %%  Peak detection 
+% name_component='N3';
+% type='mean';
+% peak_start_time=[]; %430;
+% peak_end_time=[];% 490;
+% time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+% time_end=new_post_trigger; %600; % TODO sth here why it is deleted 
+% 
+% % Store in a structure these interval peaks, the general and the peak for
+% % blocks 1, 2,  and those of blocks 3,4.
+% % General intervals 
+% name_interval=['interval_' name_component];
+% interval_temp=eval(name_interval);
+% data_Properties.(name_interval)=interval_temp;
+% clear interval_temp
+% 
+% % Intervals 1 (block, 1, 2)
+% name_interval_1=['interval_' name_component '_1'];
+% interval_temp_1=eval(name_interval_1);
+% data_Properties.(name_interval_1)=interval_temp_1;
+% clear interval_temp_1
+% 
+% % Intervals 2 (block, 3, 4)
+% name_interval_2=['interval_' name_component '_2'];
+% interval_temp_2=eval(name_interval_2);
+% data_Properties.(name_interval_2)=interval_temp_2;
+% clear interval_temp_2
+% 
+% cd(Analyzed_path)
+% cd(folder_data_save)
+% [ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% savename_temp=[name_component '_' type '_detection'];
+% data_Properties.(savename_temp).Peak_results=Peak_results;
+% data_Properties.(savename_temp).Table=Tnew;
+% clear Peak_results Tnew savename_temp
+% % 
+% % %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% % 
+% clear Peak_results Tnew
+
+% P2 
+%% P2 -a detection 
+% Define time limits for the peak detection 
+name_component='P2';
+type='mean';
+peak_start_time=[];
+peak_end_time=[];
+time_start=new_pre_trigger; %was -200 % MLS 08.09.2+16 changed % In msec -there is abs(time_start) in the function so the minus is disgarted
+time_end=new_post_trigger;
+% In msec 
+
+% Store in a structure these interval peaks, the general and the peak for
+% blocks 1, 2,  and those of blocks 3,4.
+% General intervals 
+name_interval=['interval_' name_component];
+interval_temp=eval(name_interval);
+data_Properties.(name_interval)=interval_temp;
+clear interval_temp
+
+% Intervals 1 (block, 1, 2)
+name_interval_1=['interval_' name_component '_1'];
+interval_temp_1=eval(name_interval_1);
+data_Properties.(name_interval_1)=interval_temp_1;
+clear interval_temp_1
+
+% Intervals 2 (block, 3, 4)
+name_interval_2=['interval_' name_component '_2'];
+interval_temp_2=eval(name_interval_2);
+data_Properties.(name_interval_2)=interval_temp_2;
+clear interval_temp_2
+
+cd(Analyzed_path)
+cd(folder_data_save)
+[ Peak_results, Tnew] = peak_detection_all_individ( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+savename_temp=[name_component '_' type '_detection'];
+data_Properties.(savename_temp).Peak_results=Peak_results;
+data_Properties.(savename_temp).Table=Tnew;
+clear Peak_results Tnew savename_temp
+
+% %[ Peak_results, Tnew] = peak_detection_all( name_component, type, peak_start_time, peak_end_time, time_start, time_end, Mean_Subjects, data_Properties )
+% clear Peak_results Tnew
 
 %% Save data properties
 cd(Analyzed_path)

@@ -121,7 +121,7 @@ msec_to_dp=Fs/1000;
             mean_P2=mean(meantempGo((max_P2_index-interval25ms_todp):(max_P2_index+interval25ms_todp))); %:) Jepp! thanks bestfm!
             
             % Find the min between this max and the 'peak_end_time -meaning our signal of interest the FRN here'
-            FRN_min_peak=min(meantempGo(max_P2_index:peak_end_time_index):);
+            FRN_min_peak=min(meantempGo(max_P2_index:peak_end_time_index));
             % What is the index of the min of FRN wave -different for each
             % subject:
             FRN_min_peak_index=find(meamtempGo==FRN_min_peak);
