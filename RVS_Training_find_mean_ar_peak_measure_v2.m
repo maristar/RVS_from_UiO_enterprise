@@ -12,7 +12,17 @@ function [ final_peak_measure ] = RVS_Training_find_mean_ar_peak_measure_v2(mean
 % - time_end: the time that the epoch ends in msec.
 % - Fs: sampling frequency
 % - timeVec_msec: the vector containing the time of the new (SOS!!!!!! NOTICE here) epoch.
-% - type: a string containing the words 'min', 'max' or 'mean'. Then the program
+% - type: a string containing the words 
+%   a) 'min', 
+%   b) 'max' 
+%   c) 'mean'.
+%   d) 'base_peak'
+%   e) 'mean_base_mean_peak'
+%   f) 'base_peak_YoungSanfey'
+%   g) 'base_peak_P3'
+%   h) 'base_peak_general' % not working currently 
+% 
+% Then the program
 %       finds the minimum or maximum or mean of the desired time interval as defined between
 %       peak_start_time, peak_end_time  
     

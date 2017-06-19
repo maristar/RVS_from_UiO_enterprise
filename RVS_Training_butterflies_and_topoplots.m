@@ -50,7 +50,7 @@ topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_conditio
 
 %% Define time limits and ask for them 
 name_component='P2 187ms';
-timeinmsec=187.5;
+timeinmsec=187;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 % Define time limits and ask for them 
@@ -60,18 +60,23 @@ topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_conditio
 
 
 %% Define time limits and ask for them 
-name_component='P3A 534ms';
+name_component='P3a 534ms';
 timeinmsec=534;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 %% Define time limits and ask for them 
-name_component='LatePos1 808ms';
+% name_component='LatePos1 695ms';
+% timeinmsec=695;
+% topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
+
+%% Define time limits and ask for them 
+name_component='LatePos2 808ms';
 timeinmsec=808;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 %% Define time limits and ask for them 
-name_component='LatePos2 679ms';
-timeinmsec=679;
+name_component='Late Negativity 1250s';
+timeinmsec=1250;
 topoplots_maria(name_component, timeinmsec, timeVec_msec, EEG, text_for_condition)
 
 % %% Define timei limits 
